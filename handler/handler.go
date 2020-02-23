@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -16,8 +17,14 @@ func DbConnect(name string, password string, db string) *sql.DB {
 	Db, err := sql.Open("mysql", "steime:steime@/user?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
 		panic(err.Error())
+	} else {
+		fmt.Println("Database connected successfully")
 	}
 	return Db
+}
+
+func DbClose(db *sql.DB) {
+	db.Close()
 }
 
 func GetUserHandler(Db *sql.DB) func(http.ResponseWriter, *http.Request) {
@@ -45,5 +52,23 @@ func GetUserHandler(Db *sql.DB) func(http.ResponseWriter, *http.Request) {
 		} else {
 			w.WriteHeader(http.StatusBadRequest)
 		}
+	}
+}
+
+func CreateUserHandler(Db *sql.DB) func(w http.ResponseWriter,r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		reqBody, _ := ioutil.ReadAll(r.Body)
+		fmt.Fprintf(w, "%+v", string(reqBody))
+		var user persistence.User
+		json.Unmarshal(reqBody, &user)
+		id := user.ID
+		name := user.Name
+		insForm, err := Db.Prepare("INSERT INTO users(id, name) VALUES(?,?)")
+		if err != nil {
+			panic(err.Error())
+		}
+		insForm.Exec(id, name)
+		//log.Println("INSERT: id: " + id + " | name: " + name)
+		http.Redirect(w, r, "/", 301)
 	}
 }

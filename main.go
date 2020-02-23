@@ -15,8 +15,9 @@ func main() {
 	fmt.Printf("Server started on port 8080...\n")
 	name := "steime"
 	pw := "steime"
-	db := "user"
-	Db := handler.DbConnect(name, pw, db)
-
+	database := "user"
+	Db := handler.DbConnect(name, pw, database)
+	defer handler.DbClose(Db)
 	log.Fatal(http.ListenAndServe(":8080", router.NewRouter(Db)))
+
 }
