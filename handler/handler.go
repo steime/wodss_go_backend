@@ -31,7 +31,7 @@ func GetUserHandler(Db *sql.DB) func(http.ResponseWriter, *http.Request) {
 		for results.Next() {
 
 			// for each row, scan the result into our tag composite object
-			err = results.Scan(&user.Id, &user.Name)
+			err = results.Scan(&user.ID, &user.Name)
 			if err != nil {
 				panic(err.Error()) // proper error handling instead of panic in your app
 			}

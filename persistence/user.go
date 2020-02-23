@@ -1,6 +1,6 @@
 package persistence
-
+//User type for User Handlers
 type User struct {
-	Id   int
+	ID   int
 	Name string
 }
