@@ -27,7 +27,7 @@ func DbClose(db *sql.DB) {
 	db.Close()
 }
 
-func GetUserHandler(Db *sql.DB) func(http.ResponseWriter, *http.Request) {
+func GetAllUsersHandler(Db *sql.DB) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("User")
 		results, err := Db.Query("SELECT id, name FROM users")
@@ -35,6 +35,7 @@ func GetUserHandler(Db *sql.DB) func(http.ResponseWriter, *http.Request) {
 			panic(err.Error()) // proper error handling instead of panic in your app
 		}
 		var user persistence.User
+		var users []persistence.User
 		for results.Next() {
 
 			// for each row, scan the result into our tag composite object
@@ -44,9 +45,10 @@ func GetUserHandler(Db *sql.DB) func(http.ResponseWriter, *http.Request) {
 			}
 			// and then print out the tag's Name attribute
 			log.Printf(user.Name)
+			users = append(users, user)
 		}
 
-		if json, err := json.Marshal(user); err == nil {
+		if json, err := json.Marshal(users); err == nil {
 			w.Header().Set("Content-Type", "application/json")
 			fmt.Fprintf(w, string(json))
 		} else {
