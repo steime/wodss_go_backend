@@ -1,12 +1,14 @@
 package router
 
 import (
+	"database/sql"
+
 	"github.com/gorilla/mux"
 	"github.com/steime/wodss_go_backend/handler"
 )
 
-func NewRouter() *mux.Router {
+func NewRouter(db *sql.DB) *mux.Router {
 	r := mux.NewRouter().StrictSlash(true)
-	r.HandleFunc("/user", handler.GetUserHandler)
+	r.HandleFunc("/user", handler.GetUserHandler(db))
 	return r
 }
