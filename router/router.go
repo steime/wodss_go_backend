@@ -11,13 +11,13 @@ import (
 func NewRouter(repository persistence.Repository) *mux.Router {
 	r := mux.NewRouter().StrictSlash(true)
 	r.Use(CommonMiddleware)
-	r.HandleFunc("/register", handler.AddUserHand(repository)).Methods("POST")
-	r.HandleFunc("/login",handler.LoginHandler(repository)).Methods("POST")
+	r.HandleFunc("/register", handler.AddUser(repository)).Methods("POST")
+	r.HandleFunc("/login",handler.Login(repository)).Methods("POST")
 
 	// Auth Routes
 	s := r.PathPrefix("/auth").Subrouter()
 	s.Use(JwtVerify)
-	s.HandleFunc("/user", handler.GetAllUsersHand(repository)).Methods("GET")
+	s.HandleFunc("/user", handler.GetAllUsers(repository)).Methods("GET")
 	return r
 }
 

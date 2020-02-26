@@ -11,7 +11,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func GetAllUsersHand(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+func GetAllUsers(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		users := repository.GetAllUsers()
 
@@ -25,7 +25,7 @@ func GetAllUsersHand(repository persistence.Repository) func(w http.ResponseWrit
 }
 
 
-func AddUserHand(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+func AddUser(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		reqBody, _ := ioutil.ReadAll(r.Body)
 		var user persistence.User
@@ -35,7 +35,7 @@ func AddUserHand(repository persistence.Repository) func(w http.ResponseWriter, 
 	}
 }
 
-func LoginHandler(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+func Login(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 	user := &persistence.User{}
 	err := json.NewDecoder(r.Body).Decode(user)
