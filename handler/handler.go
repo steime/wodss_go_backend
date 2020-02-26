@@ -30,8 +30,22 @@ func AddUserHand(repository persistence.Repository) func(w http.ResponseWriter, 
 		reqBody, _ := ioutil.ReadAll(r.Body)
 		var user persistence.User
 		json.Unmarshal(reqBody, &user)
-		repository.AddUser(&user)
+		repository.CreateUser(&user)
 		http.Redirect(w, r, r.Header.Get("Referer"), 200)
+	}
+}
+
+func LoginHandler(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+	user := &persistence.User{}
+	err := json.NewDecoder(r.Body).Decode(user)
+	if err != nil {
+		var resp = map[string]interface{}{"status": false, "message": "Invalid request"}
+		json.NewEncoder(w).Encode(resp)
+		return
+	}
+	resp := repository.FindOne(user.Email, user.Password)
+	json.NewEncoder(w).Encode(resp)
 	}
 }
 
