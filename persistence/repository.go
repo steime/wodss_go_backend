@@ -1,7 +1,7 @@
 package persistence
 
 type Repository interface {
-	//GetAllUsers() ([]User, error)
+	GetAllUsers() []User
 	AddUser(user *User)
 }
 

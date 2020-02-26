@@ -15,14 +15,22 @@ type MySqlRepository struct {
 	Connected bool
 }
 
-/*
-func (r *MySqlRepository) GetAllUsers() ([]persistence.User) {
+func (r *MySqlRepository) GetAllUsers() []persistence.User {
 	var users []persistence.User
-	res := r.db.Find(&users)
+	rows, err := r.db.Find(&users).Rows()
 
-	return res
+	if err != nil {
+		panic(err.Error())
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		var user persistence.User
+		r.db.ScanRows(rows, &user)
+		users = append(users, user)
+	}
+	return users
 }
-*/
 
 func (r *MySqlRepository) Connect(name string, password string, database string) {
 	dataSourceName := fmt.Sprintf("%s:%s@/%s?parseTime=true", name, password, database)

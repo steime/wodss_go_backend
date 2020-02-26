@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -9,14 +10,11 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 )
-/*
+
 func GetAllUsersHand(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Printf("User")
-		users, err := repository.GetAllUsers()
-		if err != nil {
-			panic(err.Error()) // proper error handling instead of panic in your app
-		}
+		users := repository.GetAllUsers()
+
 		if json, err := json.Marshal(users); err == nil {
 			w.Header().Set("Content-Type", "application/json")
 			fmt.Fprintf(w, string(json))
@@ -25,7 +23,7 @@ func GetAllUsersHand(repository persistence.Repository) func(w http.ResponseWrit
 		}
 	}
 }
-*/
+
 
 func AddUserHand(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
