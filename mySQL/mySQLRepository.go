@@ -3,8 +3,10 @@ package mySQL
 import (
 	"fmt"
 	"github.com/steime/wodss_go_backend/persistence"
+	"log"
+	"os"
 
-
+	"github.com/joho/godotenv"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/go-sql-driver/mysql"
@@ -32,9 +34,16 @@ func (r *MySqlRepository) GetAllUsers() []persistence.User {
 	return users
 }
 
-func (r *MySqlRepository) Connect(name string, password string, database string) {
+func (r *MySqlRepository) Connect() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	name := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASSWORD")
+	database := os.Getenv("DB_DATABASE")
 	dataSourceName := fmt.Sprintf("%s:%s@/%s?parseTime=true", name, password, database)
-	var err error
+	//var err error
 	if r.db, err = gorm.Open("mysql", dataSourceName); err != nil {
 		panic(err)
 	}
@@ -52,7 +61,7 @@ func (r *MySqlRepository) AddUser(user *persistence.User) {
 
 func NewMySqlRepository() *MySqlRepository {
 	r := MySqlRepository{}
-	r.Connect("steime", "steime", "user")
+	r.Connect()
 	if !r.db.HasTable(&persistence.User{}) {
 		r.db.Debug().AutoMigrate(&persistence.User{})
 	}
