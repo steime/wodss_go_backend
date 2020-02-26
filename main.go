@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/steime/wodss_go_backend/handler"
+	"github.com/steime/wodss_go_backend/mySQL"
 	"github.com/steime/wodss_go_backend/router"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -13,11 +13,8 @@ import (
 
 func main() {
 	fmt.Printf("Server started on port 8080...\n")
-	name := "steime"
-	pw := "steime"
-	database := "user"
-	Db := handler.DbConnect(name, pw, database)
-	defer handler.DbClose(Db)
-	log.Fatal(http.ListenAndServe(":8080", router.NewRouter(Db)))
+	repository := mySQL.NewMySqlRepository()
+	//handler := handler.NewHandler(repository)
+	log.Fatal(http.ListenAndServe(":8080", router.NewRouter(repository)))
 
 }
