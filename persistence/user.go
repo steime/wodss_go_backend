@@ -1,7 +1,10 @@
 package persistence
+
+import "github.com/jinzhu/gorm"
+
 //User type for User Handlers
 type User struct {
-	ID   int
+	gorm.Model
 	Name string
 }
 

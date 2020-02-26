@@ -1,8 +1,8 @@
 package persistence
 
 type Repository interface {
-	GetAllUsers() ([]User, error)
-
+	//GetAllUsers() ([]User, error)
+	AddUser(user *User)
 }
 
 type DefaultRepository struct {

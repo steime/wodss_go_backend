@@ -1,9 +1,7 @@
 package handler
 
 import (
-	"database/sql"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -12,16 +10,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 /*
-type handler struct {
-	repo persistence.Repository
-}
-
-func NewHandler(repo persistence.Repository) *handler {
-	return &handler{
-		repo: repo,
-	}
-}
-*/
 func GetAllUsersHand(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("User")
@@ -37,7 +25,19 @@ func GetAllUsersHand(repository persistence.Repository) func(w http.ResponseWrit
 		}
 	}
 }
+*/
 
+func AddUserHand(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		reqBody, _ := ioutil.ReadAll(r.Body)
+		var user persistence.User
+		json.Unmarshal(reqBody, &user)
+		repository.AddUser(&user)
+		http.Redirect(w, r, r.Header.Get("Referer"), 200)
+	}
+}
+
+/*
 func CreateUserHandler(Db *sql.DB) func(w http.ResponseWriter,r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		reqBody, _ := ioutil.ReadAll(r.Body)
@@ -54,4 +54,4 @@ func CreateUserHandler(Db *sql.DB) func(w http.ResponseWriter,r *http.Request) {
 		//log.Println("INSERT: id: " + id + " | name: " + name)
 		http.Redirect(w, r, "/", 301)
 	}
-}
+}*/
