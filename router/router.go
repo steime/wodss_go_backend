@@ -18,6 +18,7 @@ func NewRouter(repository persistence.Repository) *mux.Router {
 	s := r.PathPrefix("/auth").Subrouter()
 	s.Use(JwtVerify)
 	s.HandleFunc("/user", handler.GetAllUsers(repository)).Methods("GET")
+	s.HandleFunc("/user/{id}",handler.GetUserById(repository)).Methods("GET")
 	return r
 }
 

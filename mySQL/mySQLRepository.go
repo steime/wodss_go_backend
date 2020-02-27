@@ -6,6 +6,7 @@ import (
 	"github.com/steime/wodss_go_backend/persistence"
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -114,6 +115,15 @@ func (r *MySqlRepository) FindOne(email, password string) map[string]interface{}
 	return resp
 }
 
+func (r *MySqlRepository) FindById(id string) persistence.User {
+	var user persistence.User
+	i, err := strconv.Atoi(id)
+	r.db.First(&user,i).Scan(&user)
+	if err != nil {
+		panic(err.Error())
+	}
 
+	return user
+}
 
 

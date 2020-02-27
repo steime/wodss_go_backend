@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
 
@@ -21,6 +22,15 @@ func GetAllUsers(repository persistence.Repository) func(w http.ResponseWriter, 
 		} else {
 			w.WriteHeader(http.StatusBadRequest)
 		}
+	}
+}
+
+func GetUserById(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		id := vars["id"]
+		user := repository.FindById(id)
+		json.NewEncoder(w).Encode(user)
 	}
 }
 
