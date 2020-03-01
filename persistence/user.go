@@ -1,10 +1,8 @@
 package persistence
 
-import "github.com/jinzhu/gorm"
-
 //User type for User Handlers
 type User struct {
-	gorm.Model
+	ID uint `gorm:"number(3);PRIMARY_KEY;AUTO_INCREMENT"`
 	Name string
 	Email string
 	Password string `json:"Password"`

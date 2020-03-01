@@ -39,7 +39,10 @@ func AddUser(repository persistence.Repository) func(w http.ResponseWriter, r *h
 		reqBody, _ := ioutil.ReadAll(r.Body)
 		var user persistence.User
 		json.Unmarshal(reqBody, &user)
-		repository.CreateUser(&user)
+		_,error :=repository.CreateUser(&user)
+		if error != nil {
+			w.WriteHeader(http.StatusPreconditionFailed)
+		}
 		http.Redirect(w, r, r.Header.Get("Referer"), 200)
 	}
 }

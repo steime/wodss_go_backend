@@ -1,6 +1,7 @@
 package mySQL
 
 import (
+	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/steime/wodss_go_backend/persistence"
@@ -9,12 +10,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/joho/godotenv"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 	"golang.org/x/crypto/bcrypt"
-
 )
 
 type MySqlRepository struct {
@@ -52,13 +52,18 @@ func (r *MySqlRepository) Connect() {
 	r.Connected = true
 }
 
-func (r *MySqlRepository) CreateUser(user *persistence.User) {
-	pass, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		panic(err.Error())
+func (r *MySqlRepository) CreateUser(user *persistence.User) (*persistence.User,error){
+	if r.CheckIfEmailExists(user.Email) {
+		pass, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+		if err != nil {
+			panic(err.Error())
+		}
+		user.Password = string(pass)
+		r.db.Create(&user)
+		return user,nil
+	} else {
+		return user,errors.New("email already used")
 	}
-	user.Password = string(pass)
-	r.db.Create(&user)
 }
 
 func (r *MySqlRepository) GetAllUsers() []persistence.User {
@@ -124,6 +129,14 @@ func (r *MySqlRepository) FindById(id string) persistence.User {
 	}
 
 	return user
+}
+
+func (r *MySqlRepository) CheckIfEmailExists(email string) bool {
+	user := &persistence.User{}
+	if err := r.db.Where("Email = ?", email).First(user).Error; err != nil {
+		return true
+	}
+	return false
 }
 
 
