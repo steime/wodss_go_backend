@@ -68,18 +68,7 @@ func (r *MySqlRepository) CreateUser(user *persistence.User) (*persistence.User,
 
 func (r *MySqlRepository) GetAllUsers() []persistence.User {
 	var users []persistence.User
-	rows, err := r.db.Find(&users).Rows()
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	defer rows.Close()
-	for rows.Next() {
-		var user persistence.User
-		r.db.ScanRows(rows, &user)
-		users = append(users, user)
-	}
+	r.db.Find(&users).Rows()
 	return users
 }
 
