@@ -28,6 +28,9 @@ func NewMySqlRepository() *MySqlRepository {
 	if !r.db.HasTable(&persistence.User{}) {
 		r.db.Debug().AutoMigrate(&persistence.User{})
 	}
+	if !r.db.HasTable(&persistence.Module{}) {
+		r.db.Debug().AutoMigrate(&persistence.Module{})
+	}
 	return &r
 }
 
@@ -44,11 +47,6 @@ func (r *MySqlRepository) Connect() {
 	if r.db, err = gorm.Open("mysql", dataSourceName); err != nil {
 		panic(err)
 	}
-	/*
-		if err = r.db.Ping(); err != nil {
-			panic(err)
-		}
-	*/
 	r.Connected = true
 }
 
