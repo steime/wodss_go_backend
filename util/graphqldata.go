@@ -2,7 +2,6 @@ package util
 
 import (
 	"context"
-	"fmt"
 	"github.com/machinebox/graphql"
 	"github.com/steime/wodss_go_backend/persistence"
 	"log"
@@ -10,27 +9,9 @@ import (
 	"os"
 )
 
-/*
-var q struct {
-	modules struct {
-		id graphql.String
-	} //`graphql:"module(id: \"9041289\")"`
-}
-
- */
-
-
 type ModuleResponse struct {
 	Modules []persistence.Module `json:"modules"`
 }
-/*
-type Module struct {
-	ID string `json:"id"`
-	Name string `json:"name"`
-	Code string `json:"code"`
-}
-
- */
 
 var moduleQuery = `
 query {
@@ -47,7 +28,7 @@ query {
   }
 }`
 
-func GetAllModules(){
+func GetAllModules(repository persistence.Repository){
 	host := os.Getenv("GRAPH_QL_INTEFRACE")
 	httpclient := &http.Client{}
 	client := graphql.NewClient(host, graphql.WithHTTPClient(httpclient))
@@ -62,9 +43,13 @@ func GetAllModules(){
 		log.Fatal(err)
 	}
 
+	repository.SaveAllModules(resp.Modules)
+	/*
 	for _, m := range resp.Modules {
 		fmt.Println(m)
 	}
+
+	 */
 	/*
 
 	httpclient := &http.Client{}

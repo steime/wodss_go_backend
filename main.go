@@ -15,7 +15,7 @@ import (
 func main() {
 	fmt.Printf("Server started on port 8080...\n")
 	repository := mySQL.NewMySqlRepository()
-	util.GetAllModules()
+	util.GetAllModules(repository)
 	log.Fatal(http.ListenAndServe(":8080", router.NewRouter(repository)))
 
 }

@@ -28,9 +28,10 @@ func NewMySqlRepository() *MySqlRepository {
 	if !r.db.HasTable(&persistence.User{}) {
 		r.db.Debug().AutoMigrate(&persistence.User{})
 	}
-	if !r.db.HasTable(&persistence.Module{}) {
-		r.db.Debug().AutoMigrate(&persistence.Module{})
-	}
+	//For Development
+	r.db.Debug().DropTableIfExists(&persistence.Module{},&persistence.Requirements{})
+	r.db.Debug().AutoMigrate(&persistence.Module{},&persistence.Requirements{})
+
 	return &r
 }
 
@@ -126,4 +127,36 @@ func (r *MySqlRepository) CheckIfEmailExists(email string) bool {
 	return false
 }
 
+func (r *MySqlRepository) SaveAllModules(modules []persistence.Module) {
+	for _, m := range modules {
+		fmt.Println(m)
+		r.db.Create(&m)
+	}
+	//r.db.Create(&modules)
+}
 
+func (r *MySqlRepository) GetAllModules() []persistence.Module{
+	/*
+	var module persistence.Module
+	var req persistence.Requirements
+	r.db.Model(&module).Related(&req)
+
+	 */
+
+	var modules []persistence.Module
+	//r.db.Model(&module).Related(&module.Requirements).Find(&modules)
+	r.db.Find(&modules)
+	return modules
+}
+
+func (r *MySqlRepository) GetModuleById(id string) persistence.Module{
+	var module persistence.Module
+	//var req persistence.Requirements
+	i, err := strconv.Atoi(id)
+	r.db.Find(&module,i).Scan(&module)
+	if err != nil {
+		panic(err)
+	}
+
+	return module
+}

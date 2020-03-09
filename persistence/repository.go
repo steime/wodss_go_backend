@@ -6,6 +6,9 @@ type Repository interface {
 	CreateUser(user *User) (*User,error)
 	FindById(id string) User
 	//GetAllModules()
+	SaveAllModules([]Module)
+	GetAllModules() []Module
+	GetModuleById(id string) Module
 }
 
 type DefaultRepository struct {
