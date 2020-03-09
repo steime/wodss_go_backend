@@ -1,22 +1,17 @@
 package persistence
 
 type Module struct {
-	ID uint `gorm:"number(7);PRIMARY_KEY;" json:"id"`
+	ID string `gorm:"number(7);PRIMARY_KEY;" json:"id"`
 	Name string `gorm:"type:varchar(30);" json:"name"`
 	Code string `gorm:"type:varchar(10);" json:"code"`
 	Credits uint `gorm:"number(7);" json:"credits"`
 	Hs bool `gorm:"number(1);" json:"hs"`
 	Fs bool `gorm:"number(1);" json:"fs"`
-	Group
-	Requirements
+	Requirements `json:"requirements"`
 }
 
-type Group struct {
-	GroupID uint `gorm:"number(7);" json:"id"`
-}
-
-type Requirements struct {
-	ModuleID []uint
+type Requirements[] struct {
+	ModuleID string `json:"id"`
 }
 
 

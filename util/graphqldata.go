@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/machinebox/graphql"
+	"github.com/steime/wodss_go_backend/persistence"
 	"log"
 	"net/http"
 	"os"
@@ -20,14 +21,16 @@ var q struct {
 
 
 type ModuleResponse struct {
-	Modules []Module `json:"modules"`
+	Modules []persistence.Module `json:"modules"`
 }
-
+/*
 type Module struct {
 	ID string `json:"id"`
 	Name string `json:"name"`
 	Code string `json:"code"`
 }
+
+ */
 
 var moduleQuery = `
 query {
@@ -35,6 +38,12 @@ query {
     id
 	name
 	code
+	credits
+	hs
+	fs
+	requirements {
+      id
+    }
   }
 }`
 
@@ -54,9 +63,7 @@ func GetAllModules(){
 	}
 
 	for _, m := range resp.Modules {
-		fmt.Println(m.ID)
-		fmt.Println(m.Name)
-		fmt.Println(m.Code)
+		fmt.Println(m)
 	}
 	/*
 
