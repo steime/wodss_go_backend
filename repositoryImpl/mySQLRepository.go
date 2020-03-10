@@ -136,24 +136,15 @@ func (r *MySqlRepository) SaveAllModules(modules []persistence.Module) {
 }
 
 func (r *MySqlRepository) GetAllModules() []persistence.Module{
-	/*
-	var module persistence.Module
-	var req persistence.Requirements
-	r.db.Model(&module).Related(&req)
-
-	 */
-
 	var modules []persistence.Module
-	//r.db.Model(&module).Related(&module.Requirements).Find(&modules)
-	r.db.Find(&modules)
+	r.db.Preload("Requirements").Find(&modules)
 	return modules
 }
 
 func (r *MySqlRepository) GetModuleById(id string) persistence.Module{
 	var module persistence.Module
-	//var req persistence.Requirements
 	i, err := strconv.Atoi(id)
-	r.db.Find(&module,i).Scan(&module)
+	r.db.Preload("Requirements").Find(&module,i)
 	if err != nil {
 		panic(err)
 	}

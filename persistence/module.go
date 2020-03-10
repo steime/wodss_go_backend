@@ -7,19 +7,10 @@ type Module struct {
 	Credits uint `gorm:"number(7);" json:"credits"`
 	Hs bool `gorm:"number(1);" json:"hs"`
 	Fs bool `gorm:"number(1);" json:"fs"`
-	Requirements[]Requirements `json:"requirements"`
+	Requirements []Requirements `json:"requirements"`
 }
 
 type Requirements struct {
-	ModuleID string
+	ModuleID string `json:"-"`
 	ReqID string `json:"id"`
-}
-
-
-type ModuleRepository interface {
-	GetAllModules() []Module
-}
-
-type DefaultModuleRepository struct {
-	Modules []Module
 }
