@@ -7,10 +7,18 @@ type Module struct {
 	Credits uint `gorm:"number(7);" json:"credits"`
 	Hs bool `gorm:"number(1);" json:"hs"`
 	Fs bool `gorm:"number(1);" json:"fs"`
+	Group Group `json:"group"`
 	Requirements []Requirements `json:"requirements"`
 }
 
 type Requirements struct {
 	ModuleID string `json:"-"`
 	ReqID string `json:"id"`
+}
+
+type Group struct {
+	ModuleID string	`json:"modules"`
+	ID string		`json:"id"`
+	Name string		`json:"name"`
+
 }

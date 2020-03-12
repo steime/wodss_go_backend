@@ -29,8 +29,8 @@ func NewMySqlRepository() *MySqlRepository {
 		r.db.Debug().AutoMigrate(&persistence.User{})
 	}
 	//For Development
-	r.db.Debug().DropTableIfExists(&persistence.Module{},&persistence.Requirements{})
-	r.db.Debug().AutoMigrate(&persistence.Module{},&persistence.Requirements{})
+	r.db.Debug().DropTableIfExists(&persistence.Module{},&persistence.Requirements{},&persistence.Group{})
+	r.db.Debug().AutoMigrate(&persistence.Module{},&persistence.Requirements{},&persistence.Group{})
 
 	return &r
 }

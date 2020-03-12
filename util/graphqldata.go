@@ -22,6 +22,11 @@ query {
 	credits
 	hs
 	fs
+	group {
+      id
+      name
+      minima
+    }
 	requirements {
       id
     }
