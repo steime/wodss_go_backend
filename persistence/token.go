@@ -1,6 +1,6 @@
 package persistence
 
-import jwt "github.com/dgrijalva/jwt-go"
+import "github.com/dgrijalva/jwt-go"
 
 type Token struct {
 	StudentID uint

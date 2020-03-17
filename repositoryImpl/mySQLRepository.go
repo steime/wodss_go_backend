@@ -25,15 +25,13 @@ type MySqlRepository struct {
 func NewMySqlRepository() *MySqlRepository {
 	r := MySqlRepository{}
 	r.Connect()
-	/*
 	if !r.db.HasTable(&persistence.Student{}) {
 		r.db.Debug().AutoMigrate(&persistence.Student{})
 	}
 
-	 */
 	//For Development
-	r.db.Debug().DropTableIfExists(&persistence.Module{},&persistence.Requirements{},&persistence.Group{},&persistence.Student{})
-	r.db.Debug().AutoMigrate(&persistence.Module{},&persistence.Requirements{},&persistence.Group{},&persistence.Student{})
+	r.db.Debug().DropTableIfExists(&persistence.Module{},&persistence.Requirements{},&persistence.Group{})
+	r.db.Debug().AutoMigrate(&persistence.Module{},&persistence.Requirements{},&persistence.Group{})
 
 	return &r
 }

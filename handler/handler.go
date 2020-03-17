@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/steime/wodss_go_backend/persistence"
 
@@ -29,10 +30,20 @@ func GetStudentById(repository persistence.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id := vars["id"]
-		student := repository.FindById(id)
-		json.NewEncoder(w).Encode(student)
+		ctx := r.Context()
+		tk := ctx.Value("user")
+		token := tk.(*persistence.Token)
+		studId := strconv.Itoa(int(token.StudentID))
+		if studId == id {
+			student := repository.FindById(id)
+			json.NewEncoder(w).Encode(student)
+		} else {
+			w.WriteHeader(http.StatusBadRequest)
+		}
 	})
 }
+
+//func GetStudentId(ctx context.Context)
 
 func AddStudent(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {

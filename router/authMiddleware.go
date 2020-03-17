@@ -3,11 +3,11 @@ package router
 import (
 	"context"
 	"encoding/json"
+	"github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/steime/wodss_go_backend/persistence"
 	"net/http"
 	"strings"
-	"github.com/auth0/go-jwt-middleware"
 )
 
 //Exception struct
@@ -30,6 +30,7 @@ func JwtVerify(next http.Handler) func(w http.ResponseWriter, r *http.Request) {
 		}
 		tk := &persistence.Token{}
 
+
 		_, err = jwt.ParseWithClaims(header, tk, func(token *jwt.Token) (interface{}, error) {
 			return []byte("secret"), nil
 		})
@@ -39,7 +40,6 @@ func JwtVerify(next http.Handler) func(w http.ResponseWriter, r *http.Request) {
 			json.NewEncoder(w).Encode(Exception{Message: err.Error()})
 			return
 		}
-
 		ctx := context.WithValue(r.Context(), "user", tk)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	}
