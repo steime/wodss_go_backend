@@ -41,9 +41,11 @@ func AddStudent(repository persistence.Repository) func(w http.ResponseWriter, r
 		json.Unmarshal(reqBody, &student)
 		_,error :=repository.CreateStudent(&student)
 		if error != nil {
-			w.WriteHeader(http.StatusPreconditionFailed)
+			w.WriteHeader(http.StatusBadRequest)
+		} else {
+			http.Redirect(w, r, r.Header.Get("Referer"), 201)
+			json.NewEncoder(w).Encode(student)
 		}
-		http.Redirect(w, r, r.Header.Get("Referer"), 200)
 	}
 }
 
