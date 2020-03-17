@@ -11,16 +11,20 @@ import (
 func NewRouter(repository persistence.Repository) *mux.Router {
 	r := mux.NewRouter().StrictSlash(true)
 	r.Use(CommonMiddleware)
-	r.HandleFunc("/students", handler.AddStudent(repository)).Methods("POST")
 	r.HandleFunc("/login",handler.Login(repository)).Methods("POST")
+	r.HandleFunc("/students", handler.AddStudent(repository)).Methods("POST")
 	r.HandleFunc("/modules",handler.GetAllModules(repository)).Methods("GET")
 	r.HandleFunc("/modules/{id}",handler.GetModuleById(repository)).Methods("GET")
+	//r.HandleFunc("/student", handler.GetAllStudents(repository)).Methods("GET")
+	r.HandleFunc("/student/{id}",JwtVerify(handler.GetStudentById(repository))).Methods("GET")
 
 	// Auth Routes
+	/*
 	s := r.PathPrefix("/auth").Subrouter()
 	s.Use(JwtVerify)
-	s.HandleFunc("/student", handler.GetAllStudents(repository)).Methods("GET")
-	s.HandleFunc("/student/{id}",handler.GetStudentById(repository)).Methods("GET")
+
+	 */
+
 	return r
 }
 

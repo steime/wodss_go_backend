@@ -25,13 +25,13 @@ func GetAllStudents(repository persistence.Repository) func(w http.ResponseWrite
 	}
 }
 
-func GetStudentById(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
+func GetStudentById(repository persistence.Repository) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id := vars["id"]
 		student := repository.FindById(id)
 		json.NewEncoder(w).Encode(student)
-	}
+	})
 }
 
 func AddStudent(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {

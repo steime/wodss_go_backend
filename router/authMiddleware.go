@@ -14,8 +14,8 @@ import (
 type Exception persistence.Exception
 
 // JwtVerify Middleware function
-func JwtVerify(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func JwtVerify(next http.Handler) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 
 		var header,err = jwtmiddleware.FromAuthHeader(r) //Grab the token from the header
 		if err != nil {
@@ -23,8 +23,8 @@ func JwtVerify(next http.Handler) http.Handler {
 		}
 		header = strings.TrimSpace(header)
 		if header == "" {
-			//Token is missing, returns with error code 403 Unauthorized
-			w.WriteHeader(http.StatusForbidden)
+			//Token is missing, returns with error code 401
+			w.WriteHeader(401)
 			json.NewEncoder(w).Encode(Exception{Message: "Missing auth token"})
 			return
 		}
@@ -35,12 +35,12 @@ func JwtVerify(next http.Handler) http.Handler {
 		})
 
 		if err != nil {
-			w.WriteHeader(http.StatusForbidden)
+			w.WriteHeader(401)
 			json.NewEncoder(w).Encode(Exception{Message: err.Error()})
 			return
 		}
 
 		ctx := context.WithValue(r.Context(), "user", tk)
 		next.ServeHTTP(w, r.WithContext(ctx))
-	})
+	}
 }
