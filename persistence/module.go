@@ -22,3 +22,7 @@ type Group struct {
 	Name string		`json:"name"`
 
 }
+
+type ModuleList struct {
+
+}

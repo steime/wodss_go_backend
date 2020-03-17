@@ -11,7 +11,7 @@ import (
 func NewRouter(repository persistence.Repository) *mux.Router {
 	r := mux.NewRouter().StrictSlash(true)
 	r.Use(CommonMiddleware)
-	r.HandleFunc("/register", handler.AddUser(repository)).Methods("POST")
+	r.HandleFunc("/register", handler.AddStudent(repository)).Methods("POST")
 	r.HandleFunc("/login",handler.Login(repository)).Methods("POST")
 	r.HandleFunc("/modules",handler.GetAllModules(repository)).Methods("GET")
 	r.HandleFunc("/modules/{id}",handler.GetModuleById(repository)).Methods("GET")
@@ -19,8 +19,8 @@ func NewRouter(repository persistence.Repository) *mux.Router {
 	// Auth Routes
 	s := r.PathPrefix("/auth").Subrouter()
 	s.Use(JwtVerify)
-	s.HandleFunc("/user", handler.GetAllUsers(repository)).Methods("GET")
-	s.HandleFunc("/user/{id}",handler.GetUserById(repository)).Methods("GET")
+	s.HandleFunc("/student", handler.GetAllStudents(repository)).Methods("GET")
+	s.HandleFunc("/student/{id}",handler.GetStudentById(repository)).Methods("GET")
 	return r
 }
 

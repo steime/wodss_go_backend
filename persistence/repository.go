@@ -1,10 +1,10 @@
 package persistence
 
 type Repository interface {
-	GetAllUsers() []User
+	GetAllStudents() []Student
 	FindOne(email, password string) map[string]interface{}
-	CreateUser(user *User) (*User,error)
-	FindById(id string) User
+	CreateStudent(user *Student) (*Student,error)
+	FindById(id string) Student
 	//GetAllModules()
 	SaveAllModules([]Module)
 	GetAllModules() []Module
@@ -12,6 +12,6 @@ type Repository interface {
 }
 
 type DefaultRepository struct {
-	Users []User
+	Users []Student
 	Modules []Module
 }

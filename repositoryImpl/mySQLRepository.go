@@ -25,12 +25,15 @@ type MySqlRepository struct {
 func NewMySqlRepository() *MySqlRepository {
 	r := MySqlRepository{}
 	r.Connect()
-	if !r.db.HasTable(&persistence.User{}) {
-		r.db.Debug().AutoMigrate(&persistence.User{})
+	/*
+	if !r.db.HasTable(&persistence.Student{}) {
+		r.db.Debug().AutoMigrate(&persistence.Student{})
 	}
+
+	 */
 	//For Development
-	r.db.Debug().DropTableIfExists(&persistence.Module{},&persistence.Requirements{},&persistence.Group{})
-	r.db.Debug().AutoMigrate(&persistence.Module{},&persistence.Requirements{},&persistence.Group{})
+	r.db.Debug().DropTableIfExists(&persistence.Module{},&persistence.Requirements{},&persistence.Group{},&persistence.Student{})
+	r.db.Debug().AutoMigrate(&persistence.Module{},&persistence.Requirements{},&persistence.Group{},&persistence.Student{})
 
 	return &r
 }
@@ -51,45 +54,44 @@ func (r *MySqlRepository) Connect() {
 	r.Connected = true
 }
 
-func (r *MySqlRepository) CreateUser(user *persistence.User) (*persistence.User,error){
-	if r.CheckIfEmailExists(user.Email) {
-		pass, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+func (r *MySqlRepository) CreateStudent(student *persistence.Student) (*persistence.Student,error){
+	if r.CheckIfEmailExists(student.Email) {
+		pass, err := bcrypt.GenerateFromPassword([]byte(student.Password), bcrypt.DefaultCost)
 		if err != nil {
 			panic(err.Error())
 		}
-		user.Password = string(pass)
-		r.db.Create(&user)
-		return user,nil
+		student.Password = string(pass)
+		r.db.Create(&student)
+		return student,nil
 	} else {
-		return user,errors.New("email already used")
+		return student,errors.New("email already used")
 	}
 }
 
-func (r *MySqlRepository) GetAllUsers() []persistence.User {
-	var users []persistence.User
-	r.db.Find(&users).Rows()
-	return users
+func (r *MySqlRepository) GetAllStudents() []persistence.Student {
+	var students []persistence.Student
+	r.db.Find(&students).Rows()
+	return students
 }
 
 func (r *MySqlRepository) FindOne(email, password string) map[string]interface{} {
-	user := &persistence.User{}
+	student := &persistence.Student{}
 
-	if err := r.db.Where("Email = ?", email).First(user).Error; err != nil {
+	if err := r.db.Where("Email = ?", email).First(student).Error; err != nil {
 		var resp = map[string]interface{}{"status": false, "message": "Email address not found"}
 		return resp
 	}
 	expiresAt := time.Now().Add(time.Minute * 100000).Unix()
 
-	errf := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	errf := bcrypt.CompareHashAndPassword([]byte(student.Password), []byte(password))
 	if errf != nil && errf == bcrypt.ErrMismatchedHashAndPassword { //Password does not match!
 		var resp = map[string]interface{}{"status": false, "message": "Invalid login credentials. Please try again"}
 		return resp
 	}
 
 	tk := &persistence.Token{
-		UserID: user.ID,
-		Name:   user.Name,
-		Email:  user.Email,
+		StudentID: student.ID,
+		Email:  student.Email,
 		StandardClaims: &jwt.StandardClaims{
 			ExpiresAt: expiresAt,
 		},
@@ -104,24 +106,24 @@ func (r *MySqlRepository) FindOne(email, password string) map[string]interface{}
 
 	var resp = map[string]interface{}{"status": false, "message": "logged in"}
 	resp["token"] = tokenString //Store the token in the response
-	resp["user"] = user
+	resp["student"] = student
 	return resp
 }
 
-func (r *MySqlRepository) FindById(id string) persistence.User {
-	var user persistence.User
+func (r *MySqlRepository) FindById(id string) persistence.Student {
+	var student persistence.Student
 	i, err := strconv.Atoi(id)
-	r.db.First(&user,i).Scan(&user)
+	r.db.First(&student,i).Scan(&student)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	return user
+	return student
 }
 
 func (r *MySqlRepository) CheckIfEmailExists(email string) bool {
-	user := &persistence.User{}
-	if err := r.db.Where("Email = ?", email).First(user).Error; err != nil {
+	student := &persistence.Student{}
+	if err := r.db.Where("Email = ?", email).First(student).Error; err != nil {
 		return true
 	}
 	return false

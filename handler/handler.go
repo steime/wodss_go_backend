@@ -12,11 +12,11 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func GetAllUsers(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+func GetAllStudents(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		users := repository.GetAllUsers()
+		students := repository.GetAllStudents()
 
-		if json, err := json.Marshal(users); err == nil {
+		if json, err := json.Marshal(students); err == nil {
 			w.Header().Set("Content-Type", "application/json")
 			fmt.Fprintf(w, string(json))
 		} else {
@@ -25,21 +25,21 @@ func GetAllUsers(repository persistence.Repository) func(w http.ResponseWriter, 
 	}
 }
 
-func GetUserById(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+func GetStudentById(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id := vars["id"]
-		user := repository.FindById(id)
-		json.NewEncoder(w).Encode(user)
+		student := repository.FindById(id)
+		json.NewEncoder(w).Encode(student)
 	}
 }
 
-func AddUser(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+func AddStudent(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		reqBody, _ := ioutil.ReadAll(r.Body)
-		var user persistence.User
-		json.Unmarshal(reqBody, &user)
-		_,error :=repository.CreateUser(&user)
+		var student persistence.Student
+		json.Unmarshal(reqBody, &student)
+		_,error :=repository.CreateStudent(&student)
 		if error != nil {
 			w.WriteHeader(http.StatusPreconditionFailed)
 		}
@@ -49,14 +49,14 @@ func AddUser(repository persistence.Repository) func(w http.ResponseWriter, r *h
 
 func Login(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-	user := &persistence.User{}
-	err := json.NewDecoder(r.Body).Decode(user)
+	student := &persistence.Student{}
+	err := json.NewDecoder(r.Body).Decode(student)
 	if err != nil {
 		var resp = map[string]interface{}{"status": false, "message": "Invalid request"}
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
-	resp := repository.FindOne(user.Email, user.Password)
+	resp := repository.FindOne(student.Email, student.Password)
 	json.NewEncoder(w).Encode(resp)
 	}
 }
