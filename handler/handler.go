@@ -75,9 +75,10 @@ func UpdateStudent(repository persistence.Repository)http.Handler {
 		if id != studId {
 			w.WriteHeader(http.StatusBadRequest)
 		}
+		reqBody, _ := ioutil.ReadAll(r.Body)
 		student := &persistence.Student{}
-		err := json.NewDecoder(r.Body).Decode(student)
-		if err != nil {
+		err := json.Unmarshal(reqBody, &student)
+		if err != nil || student.ID == 0 || student.Email == "" || student.Semester == "" || student.Degree == ""{
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
 			_, error := repository.UpdateStudent(id,student)
