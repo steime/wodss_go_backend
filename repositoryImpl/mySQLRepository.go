@@ -66,6 +66,11 @@ func (r *MySqlRepository) CreateStudent(student *persistence.Student) (*persiste
 	}
 }
 
+func (r *MySqlRepository) UpdateStudent(id string, student *persistence.Student) (*persistence.Student,error){
+	r.db.Save(student)
+	return student,nil
+}
+
 func (r *MySqlRepository) GetAllStudents() []persistence.Student {
 	var students []persistence.Student
 	r.db.Find(&students).Rows()
@@ -108,7 +113,7 @@ func (r *MySqlRepository) FindOne(email, password string) map[string]interface{}
 	return resp
 }
 
-func (r *MySqlRepository) FindById(id string) persistence.Student {
+func (r *MySqlRepository) GetStudentById(id string) persistence.Student {
 	var student persistence.Student
 	i, err := strconv.Atoi(id)
 	r.db.First(&student,i).Scan(&student)
