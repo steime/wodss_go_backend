@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/steime/wodss_go_backend/persistence"
+	"gopkg.in/go-playground/validator.v9"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -72,21 +73,22 @@ func CreateStudent(repository persistence.Repository) func(w http.ResponseWriter
 func UpdateStudent(repository persistence.Repository)http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		checked,id := CheckID(r)
-		if checked {
+		if !checked {
 			w.WriteHeader(http.StatusBadRequest)
 		}
 		reqBody, _ := ioutil.ReadAll(r.Body)
 		student := &persistence.Student{}
 		err := json.Unmarshal(reqBody, &student)
-		if err != nil || student.ID == 0 || student.Email == "" || student.Semester == "" || student.Degree == ""{
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+		}
+		validate := validator.New()
+		err = validate.Struct(student)
+		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
-			_, error := repository.UpdateStudent(id,student)
-			if error != nil {
-				w.WriteHeader(http.StatusBadRequest)
-			} else {
-				json.NewEncoder(w).Encode(student)
-			}
+			repository.UpdateStudent(id,student)
+			json.NewEncoder(w).Encode(student)
 		}
 	})
 }

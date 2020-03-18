@@ -66,14 +66,9 @@ func (r *MySqlRepository) CreateStudent(student *persistence.Student) (*persiste
 	}
 }
 
-func (r *MySqlRepository) UpdateStudent(id string, student *persistence.Student) (*persistence.Student,error){
-	oldStudent := r.GetStudentById(id)
-	oldStudent.ID = student.ID
-	oldStudent.Email = student.Email
-	oldStudent.Degree = student.Degree
-	oldStudent.Semester = student.Semester
-	r.db.Save(oldStudent)
-	return &oldStudent,nil
+func (r *MySqlRepository) UpdateStudent(id string, student *persistence.Student) *persistence.Student{
+	r.db.Model(&student).Updates(persistence.Student{Email: student.Email, Semester: student.Semester, Degree: student.Degree})
+	return student
 }
 
 func (r *MySqlRepository) GetAllStudents() []persistence.Student {
