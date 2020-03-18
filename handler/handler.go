@@ -32,15 +32,20 @@ func GetAllStudents(repository persistence.Repository) func(w http.ResponseWrite
 	}
 }
 
+func CheckID(r *http.Request) (bool,string) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	ctx := r.Context()
+	tk := ctx.Value("user")
+	token := tk.(*persistence.Token)
+	studId := strconv.Itoa(int(token.StudentID))
+	return studId == id ,studId
+}
+
 func GetStudentById(repository persistence.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		id := vars["id"]
-		ctx := r.Context()
-		tk := ctx.Value("user")
-		token := tk.(*persistence.Token)
-		studId := strconv.Itoa(int(token.StudentID))
-		if studId == id {
+		checked,id := CheckID(r)
+		if checked {
 			student := repository.GetStudentById(id)
 			json.NewEncoder(w).Encode(student)
 		} else {
@@ -66,13 +71,8 @@ func CreateStudent(repository persistence.Repository) func(w http.ResponseWriter
 
 func UpdateStudent(repository persistence.Repository)http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		id := vars["id"]
-		ctx := r.Context()
-		tk := ctx.Value("user")
-		token := tk.(*persistence.Token)
-		studId := strconv.Itoa(int(token.StudentID))
-		if id != studId {
+		checked,id := CheckID(r)
+		if checked {
 			w.WriteHeader(http.StatusBadRequest)
 		}
 		reqBody, _ := ioutil.ReadAll(r.Body)
