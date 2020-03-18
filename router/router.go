@@ -11,6 +11,7 @@ import (
 func NewRouter(repository persistence.Repository) *mux.Router {
 	r := mux.NewRouter().StrictSlash(true)
 	r.Use(CommonMiddleware)
+	r.HandleFunc("/",handler.IndexHandler()).Methods("GET")
 	r.HandleFunc("/login",handler.Login(repository)).Methods("POST")
 	r.HandleFunc("/students", handler.AddStudent(repository)).Methods("POST")
 	r.HandleFunc("/modules",handler.GetAllModules(repository)).Methods("GET")

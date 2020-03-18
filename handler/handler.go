@@ -13,6 +13,12 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+func IndexHandler() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusTeapot)
+	}
+}
+
 func GetAllStudents(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		students := repository.GetAllStudents()
