@@ -6,7 +6,7 @@ type Repository interface {
 	CreateStudent(user *Student) (*Student,error)
 	GetStudentById(id string) (Student,error)
 	DeleteStudent(id string) error
-	UpdateStudent(id string, student *Student) *Student
+	UpdateStudent(id string, student *Student) (*Student,error)
 	SaveAllModules([]Module)
 	GetAllModules() []Module
 	GetModuleById(id string) Module

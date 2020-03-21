@@ -76,8 +76,12 @@ func UpdateStudent(repository persistence.Repository) http.Handler {
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
-			repository.UpdateStudent(id,student)
-			json.NewEncoder(w).Encode(student)
+			updStudent, err := repository.UpdateStudent(id,student)
+			if err !=nil {
+				w.WriteHeader(http.StatusBadRequest)
+			} else {
+				json.NewEncoder(w).Encode(updStudent)
+			}
 		}
 	})
 }
