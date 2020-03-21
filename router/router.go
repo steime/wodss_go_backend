@@ -19,6 +19,7 @@ func NewRouter(repository persistence.Repository) *mux.Router {
 	//r.HandleFunc("/student", handler.GetAllStudents(repository)).Methods("GET")
 	r.HandleFunc("/student/{id}",JwtVerify(handler.GetStudentById(repository))).Methods("GET")
 	r.HandleFunc("/student/{id}",JwtVerify(handler.UpdateStudent(repository))).Methods("PUT")
+	r.HandleFunc("/student/{id}",JwtVerify(handler.DeleteStudent(repository))).Methods("DELETE")
 
 	// Auth Routes
 	/*

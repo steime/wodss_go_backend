@@ -70,11 +70,24 @@ func (r *MySqlRepository) UpdateStudent(id string, student *persistence.Student)
 	r.db.Model(&student).Updates(persistence.Student{Email: student.Email, Semester: student.Semester, Degree: student.Degree})
 	return student
 }
-/*
+
 func (r *MySqlRepository) DeleteStudent(id string) error {
-	if err := r.db.Fin
+	var student persistence.Student
+	i, err := strconv.Atoi(id)
+	if err != nil {
+		panic(err.Error())
+	}
+	result := r.db.First(&student,i).Scan(&student)
+	if  result.Error != nil {
+		return result.Error
+	}
+	if result = r.db.Delete(student); result.Error != nil {
+		return result.Error
+	}
+	return result.Error
+
 }
-*/
+
 func (r *MySqlRepository) GetAllStudents() []persistence.Student {
 	var students []persistence.Student
 	r.db.Find(&students).Rows()
