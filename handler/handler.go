@@ -47,8 +47,12 @@ func GetStudentById(repository persistence.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		checked,id := CheckID(r)
 		if checked {
-			student := repository.GetStudentById(id)
-			json.NewEncoder(w).Encode(student)
+			student, err := repository.GetStudentById(id)
+			if err == nil {
+				json.NewEncoder(w).Encode(student)
+			} else {
+				w.WriteHeader(http.StatusBadRequest)
+			}
 		} else {
 			w.WriteHeader(http.StatusBadRequest)
 		}
@@ -70,7 +74,7 @@ func CreateStudent(repository persistence.Repository) func(w http.ResponseWriter
 	}
 }
 
-func UpdateStudent(repository persistence.Repository)http.Handler {
+func UpdateStudent(repository persistence.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		checked,id := CheckID(r)
 		if !checked {
@@ -92,6 +96,19 @@ func UpdateStudent(repository persistence.Repository)http.Handler {
 		}
 	})
 }
+/*
+func DeleteStudent(repository persistence.Repository) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		checked,id := CheckID(r)
+		if checked {
+			error := repository.DeleteStudent(id)
+		} else {
+			w.WriteHeader(http.StatusBadRequest)
+		}
+	})
+}
+
+ */
 
 func Login(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {

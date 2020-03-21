@@ -4,7 +4,8 @@ type Repository interface {
 	GetAllStudents() []Student
 	FindOne(email, password string) map[string]interface{}
 	CreateStudent(user *Student) (*Student,error)
-	GetStudentById(id string) Student
+	GetStudentById(id string) (Student,error)
+	//DeleteStudent(id string) error
 	UpdateStudent(id string, student *Student) *Student
 	SaveAllModules([]Module)
 	GetAllModules() []Module

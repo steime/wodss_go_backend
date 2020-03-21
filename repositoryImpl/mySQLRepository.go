@@ -70,7 +70,11 @@ func (r *MySqlRepository) UpdateStudent(id string, student *persistence.Student)
 	r.db.Model(&student).Updates(persistence.Student{Email: student.Email, Semester: student.Semester, Degree: student.Degree})
 	return student
 }
-
+/*
+func (r *MySqlRepository) DeleteStudent(id string) error {
+	if err := r.db.Fin
+}
+*/
 func (r *MySqlRepository) GetAllStudents() []persistence.Student {
 	var students []persistence.Student
 	r.db.Find(&students).Rows()
@@ -113,15 +117,16 @@ func (r *MySqlRepository) FindOne(email, password string) map[string]interface{}
 	return resp
 }
 
-func (r *MySqlRepository) GetStudentById(id string) persistence.Student {
+func (r *MySqlRepository) GetStudentById(id string) (persistence.Student,error) {
 	var student persistence.Student
 	i, err := strconv.Atoi(id)
-	r.db.First(&student,i).Scan(&student)
 	if err != nil {
 		panic(err.Error())
 	}
-
-	return student
+	if result := r.db.First(&student,i).Scan(&student); result.Error != nil {
+		return student, result.Error
+	}
+	return student,nil
 }
 
 func (r *MySqlRepository) CheckIfEmailExists(email string) bool {
