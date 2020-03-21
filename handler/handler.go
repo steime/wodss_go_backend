@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/steime/wodss_go_backend/util"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 
 	"github.com/steime/wodss_go_backend/persistence"
 	"gopkg.in/go-playground/validator.v9"
@@ -33,19 +33,9 @@ func GetAllStudents(repository persistence.Repository) func(w http.ResponseWrite
 	}
 }
 
-func CheckID(r *http.Request) (bool,string) {
-	vars := mux.Vars(r)
-	id := vars["id"]
-	ctx := r.Context()
-	tk := ctx.Value("user")
-	token := tk.(*persistence.Token)
-	studId := strconv.Itoa(int(token.StudentID))
-	return studId == id ,studId
-}
-
 func GetStudentById(repository persistence.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		checked,id := CheckID(r)
+		checked,id := util.CheckID(r)
 		if checked {
 			student, err := repository.GetStudentById(id)
 			if err == nil {
@@ -76,7 +66,7 @@ func CreateStudent(repository persistence.Repository) func(w http.ResponseWriter
 
 func UpdateStudent(repository persistence.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		checked,id := CheckID(r)
+		checked,id := util.CheckID(r)
 		if !checked {
 			w.WriteHeader(http.StatusBadRequest)
 		}
@@ -99,7 +89,7 @@ func UpdateStudent(repository persistence.Repository) http.Handler {
 
 func DeleteStudent(repository persistence.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		checked,id := CheckID(r)
+		checked,id := util.CheckID(r)
 		if checked {
 			error := repository.DeleteStudent(id)
 			if error != nil {
