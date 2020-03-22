@@ -1,8 +1,8 @@
 package util
 
 import (
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
-	"github.com/steime/wodss_go_backend/persistence"
 	"net/http"
 	"strconv"
 )
@@ -11,8 +11,15 @@ func CheckID(r *http.Request) (bool,string) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 	ctx := r.Context()
-	tk := ctx.Value("user")
-	token := tk.(*persistence.Token)
-	studId := strconv.Itoa(int(token.StudentID))
-	return studId == id ,studId
+	tk := ctx.Value("student")
+	token, _ := jwt.Parse(tk.(string), func(token *jwt.Token) (i interface{}, err error) {
+		return []byte("secret"), nil
+	})
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		claimId := int(claims["sub"].(float64))
+		studId := strconv.Itoa(claimId)
+		return studId == id ,studId
+	} else {
+		return false,"-1"
+	}
 }

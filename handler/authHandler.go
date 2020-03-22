@@ -46,7 +46,7 @@ func RefreshToken(repository persistence.Repository) http.Handler {
 func generateTokenPair(studentID uint, mail string) (map[string]string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
-	claims["StudentID"] = studentID
+	claims["sub"] = studentID
 	claims["mail"] = mail
 	claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
 
@@ -57,7 +57,7 @@ func generateTokenPair(studentID uint, mail string) (map[string]string, error) {
 
 	refreshToken := jwt.New(jwt.SigningMethodHS256)
 	rtClaims := refreshToken.Claims.(jwt.MapClaims)
-	rtClaims["StudentID"] = studentID
+	rtClaims["sub"] = studentID
 	rtClaims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
 	rt, err := refreshToken.SignedString([]byte("secret"))

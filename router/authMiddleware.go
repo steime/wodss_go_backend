@@ -28,10 +28,8 @@ func JwtVerify(next http.Handler) func(w http.ResponseWriter, r *http.Request) {
 			json.NewEncoder(w).Encode(Exception{Message: "Missing auth token"})
 			return
 		}
-		tk := &persistence.Token{}
 
-
-		_, err = jwt.ParseWithClaims(header, tk, func(token *jwt.Token) (interface{}, error) {
+		_, err = jwt.Parse(header, func(token *jwt.Token) (interface{}, error) {
 			return []byte("secret"), nil
 		})
 
@@ -40,7 +38,8 @@ func JwtVerify(next http.Handler) func(w http.ResponseWriter, r *http.Request) {
 			json.NewEncoder(w).Encode(Exception{Message: err.Error()})
 			return
 		}
-		ctx := context.WithValue(r.Context(), "user", tk)
+
+		ctx := context.WithValue(r.Context(), "student", header)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	}
 }
