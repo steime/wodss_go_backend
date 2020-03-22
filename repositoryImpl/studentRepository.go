@@ -72,7 +72,7 @@ func (r *MySqlRepository) FindOne(email, password string) map[string]interface{}
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["sub"] = student.ID
-	claims["mail"] = student.Email
+	//claims["mail"] = student.Email
 	claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
    /*
 	expiresAt := time.Now().Add(time.Minute * 15).Unix()

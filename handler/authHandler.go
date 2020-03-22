@@ -29,25 +29,23 @@ func RefreshToken(repository persistence.Repository) http.Handler {
 		if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			checked,id := util.CheckID(r)
 			if student , err := repository.GetStudentById(id); err == nil || checked {
-				newTokenPair, err := generateTokenPair(student.ID,student.Email)
+				newTokenPair, err := generateTokenPair(student.ID)
 				if err != nil {
 					log.Fatal(err)
 				}
 				json.NewEncoder(w).Encode(newTokenPair)
-				w.WriteHeader(http.StatusOK)
 				return
 			}
-			w.WriteHeader(http.StatusBadRequest)
 		}
 		w.WriteHeader(http.StatusBadRequest)
 	})
 }
 
-func generateTokenPair(studentID uint, mail string) (map[string]string, error) {
+func generateTokenPair(studentID uint) (map[string]string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["sub"] = studentID
-	claims["mail"] = mail
+	//claims["mail"] = mail
 	claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
 
 	t, err := token.SignedString([]byte("secret"))
