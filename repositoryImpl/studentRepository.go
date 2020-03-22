@@ -62,7 +62,6 @@ func (r *MySqlRepository) FindOne(email, password string) map[string]interface{}
 		var resp = map[string]interface{}{"status": false, "message": "Email address not found"}
 		return resp
 	}
-	expiresAt := time.Now().Add(time.Minute * 100000).Unix()
 
 	errf := bcrypt.CompareHashAndPassword([]byte(student.Password), []byte(password))
 	if errf != nil && errf == bcrypt.ErrMismatchedHashAndPassword { //Password does not match!
@@ -70,6 +69,13 @@ func (r *MySqlRepository) FindOne(email, password string) map[string]interface{}
 		return resp
 	}
 
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["StudentID"] = student.ID
+	claims["mail"] = student.Email
+	claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
+   /*
+	expiresAt := time.Now().Add(time.Minute * 15).Unix()
 	tk := &persistence.Token{
 		StudentID: student.ID,
 		Email:  student.Email,
@@ -79,15 +85,24 @@ func (r *MySqlRepository) FindOne(email, password string) map[string]interface{}
 	}
 
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)
-
-	tokenString, error := token.SignedString([]byte("secret"))
+	*/
+	t, error := token.SignedString([]byte("secret"))
 	if error != nil {
 		fmt.Println(error)
 	}
+	refreshToken := jwt.New(jwt.SigningMethodHS256)
+	rtClaims := refreshToken.Claims.(jwt.MapClaims)
+	rtClaims["StudentID"] = student.ID
+	rtClaims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
-	var resp = map[string]interface{}{"status": false, "message": "logged in"}
-	resp["token"] = tokenString //Store the token in the response
-	resp["student"] = student
+	rt, err := refreshToken.SignedString([]byte("secret"))
+	if err != nil {
+		fmt.Println(error)
+	}
+
+	var resp = map[string]interface{}{}
+	resp["token"] = t
+	resp["refreshToken"] = rt
 	return resp
 }
 
