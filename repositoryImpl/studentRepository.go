@@ -12,7 +12,7 @@ import (
 
 func (r *MySqlRepository) CreateStudent(student *persistence.Student) (*persistence.Student,error){
 	if r.CheckIfEmailExists(student.Email) {
-		pass, err := bcrypt.GenerateFromPassword([]byte(student.Password), bcrypt.DefaultCost)
+		pass, err := bcrypt.GenerateFromPassword([]byte(student.Password), 14)
 		if err != nil {
 			panic(err.Error())
 		}

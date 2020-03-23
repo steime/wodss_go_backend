@@ -15,31 +15,31 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+type CreateBody struct {
+	Email string `json:"email,omitempty"`
+	Password string `json:"password,omitempty"`
+	Semester string `json:"semester,omitempty"`
+	Degree string `json:"degree,omitempty"`
+}
+
 
 func CreateStudent(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		createBody := &CreateBody{}
 		student := &persistence.Student{}
-		if err := json.NewDecoder(r.Body).Decode(student); err != nil {
+		if err := json.NewDecoder(r.Body).Decode(createBody); err != nil {
 			log.Fatal(err)
 		}
+		student.Password = createBody.Password
+		student.Email = createBody.Email
+		student.Degree = createBody.Degree
+		student.Semester = createBody.Semester
 		if _,error :=repository.CreateStudent(student); error != nil {
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
 			http.Redirect(w, r, r.Header.Get("Referer"), 201)
 			json.NewEncoder(w).Encode(student)
 		}
-	}
-}
-
-func Login(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		student := &persistence.Student{}
-		if err := json.NewDecoder(r.Body).Decode(student); err != nil {
-			var resp = map[string]interface{}{"status": false, "message": "Invalid request"}
-			json.NewEncoder(w).Encode(resp)
-		}
-		resp := repository.FindOne(student.Email, student.Password)
-		json.NewEncoder(w).Encode(resp)
 	}
 }
 

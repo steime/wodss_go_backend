@@ -11,6 +11,30 @@ import (
 	"time"
 )
 
+type LoginBody struct {
+	Email string `json:"email,omitempty"`
+	Password string `json:"password,omitempty"`
+}
+
+func Login(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		student := &LoginBody{}
+		err := json.NewDecoder(r.Body).Decode(student)
+		if err != nil {
+			var resp = map[string]interface{}{"status": false, "message": "Invalid request"}
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(resp)
+		} else {
+			resp := repository.FindOne(student.Email, student.Password)
+			if resp["status"] == false {
+				w.WriteHeader(http.StatusBadRequest)
+			} else {
+				json.NewEncoder(w).Encode(resp)
+			}
+		}
+	}
+}
+
 func RefreshToken(repository persistence.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		type tokenReqBody struct {
