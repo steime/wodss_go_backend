@@ -22,11 +22,7 @@ query {
 	credits
 	hs
 	fs
-	group {
-      id
-      name
-      minima
-    }
+	msp
 	requirements {
       id
     }

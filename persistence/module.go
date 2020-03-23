@@ -7,7 +7,7 @@ type Module struct {
 	Credits uint `gorm:"number(7);" json:"credits"`
 	Hs bool `gorm:"number(1);" json:"hs"`
 	Fs bool `gorm:"number(1);" json:"fs"`
-	Group Group `json:"group"`
+	Msp string `gorm:"type:varchar(20);" json:"msp"`
 	Requirements []Requirements `json:"requirements"`
 }
 
