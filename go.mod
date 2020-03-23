@@ -17,7 +17,7 @@ require (
 	github.com/machinebox/graphql v0.2.2
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/shurcooL/graphql v0.0.0-20181231061246-d48a9a75455f
-	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d
+	golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59
 	golang.org/x/net v0.0.0-20200301022130-244492dfa37a
 	gopkg.in/go-playground/validator.v9 v9.31.0
 )
