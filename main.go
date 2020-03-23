@@ -20,6 +20,18 @@ func main() {
 	util.GetAllModules(repository)
 	corsRouter := handlers.CORS()(router.NewRouter(repository))
 	loggedRouter := handlers.LoggingHandler(os.Stdout, corsRouter)
-	log.Fatal(http.ListenAndServe(":8080", loggedRouter))
+  
+  go func() {
+    err_http := http.ListenAndServe(":8080", loggedRouter)
+    if err_http != nil {
+        log.Fatal("Web server (HTTP): ", err_http)
+    }
+   }()
+
+  //  Start HTTPS
+  err := http.ListenAndServeTLS(":8081", "server.crt", "server.key", loggedRouter)
+  if err != nil {
+      log.Fatal("Web server (HTTPS): ", err)
+  }
 
 }
