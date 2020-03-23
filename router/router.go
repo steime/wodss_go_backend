@@ -7,8 +7,9 @@ import (
 )
 
 func NewRouter(repository persistence.Repository) *mux.Router {
-	r := mux.NewRouter().StrictSlash(true)
-	r.Use(CommonMiddleware)
+	s := mux.NewRouter().StrictSlash(true)
+	s.Use(CommonMiddleware)
+	r := s.PathPrefix("/api").Subrouter()
 	r.HandleFunc("/",handler.IndexHandler()).Methods("GET")
 	r.HandleFunc("/auth/login",handler.Login(repository)).Methods("POST")
 	r.HandleFunc("/students", handler.CreateStudent(repository)).Methods("POST")
