@@ -18,7 +18,8 @@ func main() {
 	fmt.Printf("Server started on port 8080...\n")
 	repository := mySQL.NewMySqlRepository()
 	util.GetAllModules(repository)
-	loggedRouter := handlers.LoggingHandler(os.Stdout, router.NewRouter(repository))
+	corsRouter := handlers.CORS()(router.NewRouter(repository))
+	loggedRouter := handlers.LoggingHandler(os.Stdout, corsRouter)
 	log.Fatal(http.ListenAndServe(":8080", loggedRouter))
 
 }
