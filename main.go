@@ -20,10 +20,6 @@ func main() {
 	util.GetAllModules(repository)
 	corsRouter := handlers.CORS()(router.NewRouter(repository))
 	loggedRouter := handlers.LoggingHandler(os.Stdout, corsRouter)
- 
-	err := http.ListenAndServeTLS(":8080", "server.crt", "server.key", loggedRouter)
+	log.Fatal(http.ListenAndServe(":8080", loggedRouter))
 
-	if err != nil {
-		log.Fatal(err)
-	}
 }
