@@ -13,20 +13,28 @@ func (r *MySqlRepository) SaveAllModuleGroups(moduleGroups []persistence.ModuleG
 	}
 }
 
-func (r *MySqlRepository) GetAllModuleGroups() []persistence.ModuleGroup{
+func (r *MySqlRepository) GetAllModuleGroups() ([]persistence.ModuleGroup,error){
 	var moduleGroups []persistence.ModuleGroup
-	r.db.Preload("Parent").Find(&moduleGroups)
-	r.db.Preload("ModulesList").Find(&moduleGroups)
-	return moduleGroups
+	if result := r.db.Preload("Parent").Find(&moduleGroups); result.Error != nil {
+		return moduleGroups,result.Error
+	}
+	if result := r.db.Preload("ModulesList").Find(&moduleGroups); result.Error != nil {
+		return moduleGroups,result.Error
+	}
+	return moduleGroups,nil
 }
 
-func (r *MySqlRepository) GetModuleGroupById(id string) persistence.ModuleGroup {
+func (r *MySqlRepository) GetModuleGroupById(id string) (persistence.ModuleGroup,error) {
 	var moduleGroup persistence.ModuleGroup
 	i, err := strconv.Atoi(id)
 	if err != nil {
 		panic(err)
 	}
-	r.db.Preload("Parent").Find(&moduleGroup,i)
-	r.db.Preload("ModulesList").Find(&moduleGroup,i)
-	return moduleGroup
+	if result := r.db.Preload("Parent").Find(&moduleGroup,i); result.Error != nil {
+		return moduleGroup,result.Error
+	}
+	if result := r.db.Preload("ModulesList").Find(&moduleGroup,i); result.Error != nil {
+		return moduleGroup,result.Error
+	}
+	return moduleGroup,nil
 }

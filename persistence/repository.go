@@ -10,9 +10,9 @@ type Repository interface {
 	GetAllModules() []Module
 	SaveAllModules([]Module)
 	GetModuleById(id string) Module
-	GetAllModuleGroups() []ModuleGroup
+	GetAllModuleGroups() ([]ModuleGroup,error)
 	SaveAllModuleGroups([]ModuleGroup)
-	GetModuleGroupById(id string) ModuleGroup
+	GetModuleGroupById(id string) (ModuleGroup,error)
 }
 
 type DefaultRepository struct {
