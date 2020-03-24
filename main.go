@@ -18,7 +18,7 @@ func main() {
 	fmt.Printf("Server started on port 8080...\n")
 	repository := mySQL.NewMySqlRepository()
 	util.GetAllModules(repository)
-	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With","X-PINGOTHER", "Content-Type"})
 	originsOk := handlers.AllowedOrigins([]string{os.Getenv("ORIGIN_ALLOWED")})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 	corsRouter := handlers.CORS(originsOk, headersOk, methodsOk)(router.NewRouter(repository))
