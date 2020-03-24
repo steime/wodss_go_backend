@@ -12,6 +12,7 @@ type Repository interface {
 	GetModuleById(id string) Module
 	GetAllModuleGroups() []ModuleGroup
 	SaveAllModuleGroups([]ModuleGroup)
+	GetModuleGroupById(id string) ModuleGroup
 }
 
 type DefaultRepository struct {

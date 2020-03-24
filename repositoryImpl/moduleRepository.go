@@ -22,10 +22,10 @@ func (r *MySqlRepository) GetAllModules() []persistence.Module{
 func (r *MySqlRepository) GetModuleById(id string) persistence.Module{
 	var module persistence.Module
 	i, err := strconv.Atoi(id)
-	r.db.Preload("Requirements").Find(&module,i)
 	if err != nil {
 		panic(err)
 	}
+	r.db.Preload("Requirements").Find(&module,i)
 
 	return module
 }

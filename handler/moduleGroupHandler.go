@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"github.com/steime/wodss_go_backend/persistence"
 	"net/http"
 )
@@ -17,5 +18,14 @@ func GetAllModuleGroups(repository persistence.Repository) func(w http.ResponseW
 		} else {
 			w.WriteHeader(http.StatusBadRequest)
 		}
+	}
+}
+
+func GetModuleGroupById(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		id := vars["id"]
+		moduleGroup := repository.GetModuleGroupById(id)
+		json.NewEncoder(w).Encode(moduleGroup)
 	}
 }
