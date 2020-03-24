@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/handlers"
+	"github.com/rs/cors"
 	"log"
 	"net/http"
 	"os"
@@ -18,10 +19,22 @@ func main() {
 	fmt.Printf("Server started on port 8080...\n")
 	repository := mySQL.NewMySqlRepository()
 	util.GetAllModules(repository)
+	/*
 	headersOk := handlers.AllowedHeaders([]string{"*"})
 	originsOk := handlers.AllowedOrigins([]string{os.Getenv("ORIGIN_ALLOWED")})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 	corsRouter := handlers.CORS(originsOk, headersOk, methodsOk)(router.NewRouter(repository))
+
+	 */
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:4200"},
+		AllowedHeaders: []string{"*"},
+		AllowedMethods: []string{"GET", "HEAD", "POST", "PUT", "OPTIONS"},
+		AllowCredentials: true,
+		// Enable Debugging for testing, consider disabling in production
+		Debug: true,
+	})
+	corsRouter := c.Handler(router.NewRouter(repository))
 	loggedRouter := handlers.LoggingHandler(os.Stdout, corsRouter)
   
   go func() {
