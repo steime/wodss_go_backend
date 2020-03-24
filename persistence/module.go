@@ -15,14 +15,3 @@ type Requirements struct {
 	ModuleID string `json:"-"`
 	ReqID string `json:"id"`
 }
-
-type Group struct {
-	ModuleID string	`json:"modules"`
-	ID string		`json:"id"`
-	Name string		`json:"name"`
-
-}
-
-type ModuleList struct {
-
-}

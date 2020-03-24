@@ -7,9 +7,11 @@ type Repository interface {
 	GetStudentById(id string) (Student,error)
 	DeleteStudent(id string) error
 	UpdateStudent(id string, student *Student) (*Student,error)
-	SaveAllModules([]Module)
 	GetAllModules() []Module
+	SaveAllModules([]Module)
 	GetModuleById(id string) Module
+	GetAllModuleGroups() []ModuleGroup
+	SaveAllModuleGroups([]ModuleGroup)
 }
 
 type DefaultRepository struct {

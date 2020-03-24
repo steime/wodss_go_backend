@@ -19,6 +19,7 @@ func main() {
 	fmt.Printf("Server started on port 8080...\n")
 	repository := mySQL.NewMySqlRepository()
 	util.GetAllModules(repository)
+	util.GetAllModuleGroups(repository)
 	/*
 	headersOk := handlers.AllowedHeaders([]string{"*"})
 	originsOk := handlers.AllowedOrigins([]string{os.Getenv("ORIGIN_ALLOWED")})
