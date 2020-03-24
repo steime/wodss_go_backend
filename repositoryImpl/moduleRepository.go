@@ -13,19 +13,22 @@ func (r *MySqlRepository) SaveAllModules(modules []persistence.Module) {
 	}
 }
 
-func (r *MySqlRepository) GetAllModules() []persistence.Module{
+func (r *MySqlRepository) GetAllModules() ([]persistence.Module,error){
 	var modules []persistence.Module
-	r.db.Preload("Requirements").Find(&modules)
-	return modules
+	if result := r.db.Preload("Requirements").Find(&modules); result.Error != nil {
+		return modules,result.Error
+	}
+	return modules,nil
 }
 
-func (r *MySqlRepository) GetModuleById(id string) persistence.Module{
+func (r *MySqlRepository) GetModuleById(id string) (persistence.Module,error){
 	var module persistence.Module
 	i, err := strconv.Atoi(id)
 	if err != nil {
 		panic(err)
 	}
-	r.db.Preload("Requirements").Find(&module,i)
-
-	return module
+	if result := r.db.Preload("Requirements").Find(&module,i); result.Error != nil {
+		return module,result.Error
+	}
+	return module,nil
 }

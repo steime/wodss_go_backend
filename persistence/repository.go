@@ -7,9 +7,9 @@ type Repository interface {
 	GetStudentById(id string) (Student,error)
 	DeleteStudent(id string) error
 	UpdateStudent(id string, student *Student) (*Student,error)
-	GetAllModules() []Module
+	GetAllModules() ([]Module,error)
 	SaveAllModules([]Module)
-	GetModuleById(id string) Module
+	GetModuleById(id string) (Module,error)
 	GetAllModuleGroups() ([]ModuleGroup,error)
 	SaveAllModuleGroups([]ModuleGroup)
 	GetModuleGroupById(id string) (ModuleGroup,error)
