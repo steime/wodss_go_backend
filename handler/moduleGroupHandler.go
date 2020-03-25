@@ -7,19 +7,19 @@ import (
 	"net/http"
 )
 
-func GetAllModuleGroups(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
+func GetAllModuleGroups(repository persistence.Repository) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if moduleGroups , error := repository.GetAllModuleGroups(); error !=nil {
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(moduleGroups)
 		}
-	}
+	})
 }
 
-func GetModuleGroupById(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
+func GetModuleGroupById(repository persistence.Repository) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id := vars["id"]
 		if moduleGroup, error := repository.GetModuleGroupById(id); error != nil {
@@ -28,5 +28,5 @@ func GetModuleGroupById(repository persistence.Repository) func(w http.ResponseW
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(moduleGroup)
 		}
-	}
+	})
 }
