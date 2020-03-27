@@ -19,9 +19,9 @@ func NewRouter(repository persistence.Repository) *mux.Router {
 	r.HandleFunc("/modules/{id}",JwtVerify(handler.GetModuleById(repository))).Methods("GET")
 	r.HandleFunc("/modulegroups",JwtVerify(handler.GetAllModuleGroups(repository))).Methods("GET")
 	r.HandleFunc("/modulegroups/{id}",JwtVerify(handler.GetModuleGroupById(repository))).Methods("GET")
-	r.HandleFunc("/student/{id}",JwtVerify(handler.GetStudentById(repository))).Methods("GET")
-	r.HandleFunc("/student/{id}",JwtVerify(handler.UpdateStudent(repository))).Methods("PUT")
-	r.HandleFunc("/student/{id}",JwtVerify(handler.DeleteStudent(repository))).Methods("DELETE")
+	r.HandleFunc("/students/{id}",JwtVerify(handler.GetStudentById(repository))).Methods("GET")
+	r.HandleFunc("/students/{id}",JwtVerify(handler.UpdateStudent(repository))).Methods("PUT")
+	r.HandleFunc("/students/{id}",JwtVerify(handler.DeleteStudent(repository))).Methods("DELETE")
 	r.HandleFunc("/auth/refresh",JwtVerify(handler.RefreshToken(repository))).Methods("POST")
 
 	return r
