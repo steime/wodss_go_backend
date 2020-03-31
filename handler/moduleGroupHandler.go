@@ -12,8 +12,20 @@ func GetAllModuleGroups(repository persistence.Repository) http.Handler {
 		if moduleGroups , error := repository.GetAllModuleGroups(); error !=nil {
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
+			var resp []ModuleGroupsResponse
+			var modresp ModuleGroupsResponse
+			for _,group := range moduleGroups {
+				modresp.ID = group.ID
+				modresp.Name = group.Name
+				modresp.Minima = group.Minima
+				modresp.Parent = group.Parent.Parent
+				for _, m := range group.ModulesList {
+					modresp.ModulesList = append(modresp.ModulesList, m.ModuleID)
+				}
+				resp = append(resp,modresp)
+			}
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(moduleGroups)
+			json.NewEncoder(w).Encode(resp)
 		}
 	})
 }
@@ -25,8 +37,25 @@ func GetModuleGroupById(repository persistence.Repository) http.Handler {
 		if moduleGroup, error := repository.GetModuleGroupById(id); error != nil {
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
+			var resp ModuleGroupsResponse
+			// Parse DB Data to response format
+			resp.ID = moduleGroup.ID
+			resp.Name = moduleGroup.Name
+			resp.Minima = moduleGroup.Minima
+			resp.Parent = moduleGroup.Parent.Parent
+			for _, m := range moduleGroup.ModulesList {
+				resp.ModulesList = append(resp.ModulesList, m.ModuleID)
+			}
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(moduleGroup)
+			json.NewEncoder(w).Encode(resp)
 		}
 	})
+}
+
+type ModuleGroupsResponse struct {
+	ID string
+	Name string
+	Minima uint
+	Parent string
+	ModulesList []string
 }
