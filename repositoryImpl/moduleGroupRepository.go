@@ -15,10 +15,7 @@ func (r *MySqlRepository) SaveAllModuleGroups(moduleGroups []persistence.ModuleG
 
 func (r *MySqlRepository) GetAllModuleGroups() ([]persistence.ModuleGroup,error){
 	var moduleGroups []persistence.ModuleGroup
-	if result := r.db.Preload("Parent").Find(&moduleGroups); result.Error != nil {
-		return moduleGroups,result.Error
-	}
-	if result := r.db.Preload("ModulesList").Find(&moduleGroups); result.Error != nil {
+	if result := r.db.Preload("Parent").Preload("ModulesList").Find(&moduleGroups); result.Error != nil {
 		return moduleGroups,result.Error
 	}
 	return moduleGroups,nil
@@ -30,10 +27,7 @@ func (r *MySqlRepository) GetModuleGroupById(id string) (persistence.ModuleGroup
 	if err != nil {
 		panic(err)
 	}
-	if result := r.db.Preload("Parent").Find(&moduleGroup,i); result.Error != nil {
-		return moduleGroup,result.Error
-	}
-	if result := r.db.Preload("ModulesList").Find(&moduleGroup,i); result.Error != nil {
+	if result := r.db.Preload("Parent").Preload("ModulesList").Find(&moduleGroup,i); result.Error != nil {
 		return moduleGroup,result.Error
 	}
 	return moduleGroup,nil
