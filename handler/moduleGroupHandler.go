@@ -4,12 +4,14 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/steime/wodss_go_backend/persistence"
+	"log"
 	"net/http"
 )
 
 func GetAllModuleGroups(repository persistence.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if moduleGroups , error := repository.GetAllModuleGroups(); error !=nil {
+			log.Print(error)
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
 			var resp []ModuleGroupsResponse
@@ -35,6 +37,7 @@ func GetModuleGroupById(repository persistence.Repository) http.Handler {
 		vars := mux.Vars(r)
 		id := vars["id"]
 		if moduleGroup, error := repository.GetModuleGroupById(id); error != nil {
+			log.Print(error)
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
 			var resp ModuleGroupsResponse

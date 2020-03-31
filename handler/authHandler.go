@@ -21,14 +21,15 @@ func Login(repository persistence.Repository) func(w http.ResponseWriter, r *htt
 		student := &LoginBody{}
 		err := json.NewDecoder(r.Body).Decode(student)
 		if err != nil {
-			var resp = map[string]interface{}{"status": false, "message": "Invalid request"}
+			//var resp = map[string]interface{}{"status": false, "message": "Invalid request"}
 			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(resp)
+			//json.NewEncoder(w).Encode(resp)
 		} else {
 			resp := repository.FindOne(student.Email, student.Password)
 			if resp["status"] == false {
 				w.WriteHeader(http.StatusBadRequest)
 			} else {
+				w.Header().Set("Content-Type", "application/json")
 				json.NewEncoder(w).Encode(resp)
 			}
 		}
@@ -42,7 +43,8 @@ func RefreshToken(repository persistence.Repository) http.Handler {
 		}
 		tokenReq := &tokenReqBody{}
 		if err := json.NewDecoder(r.Body).Decode(tokenReq); err !=nil {
-			log.Fatal(err)
+			log.Print(err)
+			w.WriteHeader(http.StatusBadRequest)
 		}
 		token, _ := jwt.Parse(tokenReq.RefreshToken, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -55,8 +57,10 @@ func RefreshToken(repository persistence.Repository) http.Handler {
 			if student , err := repository.GetStudentById(id); err == nil || checked {
 				newTokenPair, err := generateTokenPair(student.ID)
 				if err != nil {
-					log.Fatal(err)
+					log.Print(err)
+					w.WriteHeader(http.StatusBadRequest)
 				}
+				w.Header().Set("Content-Type", "application/json")
 				json.NewEncoder(w).Encode(newTokenPair)
 				return
 			}
