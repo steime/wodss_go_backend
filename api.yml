@@ -1,0 +1,783 @@
+openapi: 3.0.0
+info:
+  description: API für die Studium Planung. Alle Felder sind required.
+  version: 1.0.0
+  title: Studiums Planung
+
+servers:
+  - url: http://localhost/api
+
+paths:
+  /:
+    get:
+      responses:
+        418:
+          description: I'm a teapot
+
+  /auth/login:
+    post:
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      description: ""
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /auth/refresh:
+    post:
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+      description: ""
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /auth/forgot:
+    post:
+      tags:
+        - auth
+      description: ""
+      parameters:
+        - name: mail
+          in: query
+          required: true
+          description: Email adress for forgotten password account (Mail contains a token that can be entered on the reset form.)
+          schema:
+            type: string
+      responses:
+        204:
+          $ref: '#/components/responses/NoContent'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /auth/reset:
+    post:
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                forgotToken:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+
+      description: ""
+      responses:
+        204:
+          $ref: '#/components/responses/NoContent'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+
+  /students:
+    post:
+      tags:
+        - student
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: "Ein Student besucht einen bestimmten Studiengang (Degree)."
+              properties:
+                email:
+                  type: string
+                  minLength: 6
+                  maxLength: 320
+                password:
+                  type: string
+                  minLength: 10
+                semester:
+                  type: string
+                degree:
+                  type: string
+      description: ""
+      responses:
+        201:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Student'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+
+  /students/{id}:
+    get:
+      tags:
+        - student
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The degree id
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+    put:
+      tags:
+        - student
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Student'
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The degree id
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Student'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+    delete:
+      tags:
+        - student
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The degree id
+          schema:
+            type: string
+      responses:
+        204:
+          $ref: '#/components/responses/NoContent'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /degree:
+    get:
+      tags:
+        - degree
+      description: ""
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Degree'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /degree/{id}:
+    get:
+      tags:
+        - degree
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The degree id
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Degree'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /modules:
+    get:
+      tags:
+        - module
+      description: ""
+      parameters:
+        - name: degree
+          in: query
+          required: false
+          description: Filter modules by degree
+          schema:
+            type: string
+        - name: canVisit
+          in: query
+          required: false
+          description: Filter Modules to get only visitable modules for the student
+          schema:
+            type: boolean
+            example: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Module'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /modules/{id}:
+    get:
+      tags:
+        - module
+      description: ""
+      operationId: getModuleById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The module id
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /modulegroups:
+    get:
+      tags:
+        - modulegroup
+      description: ""
+      parameters:
+        - name: degree
+          in: query
+          required: false
+          description: Filter modulegroups by degree
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModuleGroup'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /modulegroups/{id}:
+    get:
+      tags:
+        - modulegroup
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The degree id
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleGroup'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /profiles:
+    get:
+      tags:
+        - profile
+      description: ""
+      parameters:
+        - name: degree
+          in: query
+          required: false
+          description: Filter profiles by degree
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Profile'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /profiles/{id}:
+    get:
+      tags:
+        - profile
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The profile id
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /modulevisits:
+    get:
+      tags:
+        - modulevisit
+      description: ""
+      parameters:
+        - name: student
+          in: query
+          required: true
+          description: Returns all modulevisits that a Student has
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModuleVisit'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      tags:
+        - modulevisit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: "Belegte Module, wobei timeStart und End für die Modulplanung verwendet werden kann."
+              properties:
+                grade:
+                  type: number
+                  format: float
+                  example: 5.5
+                  default: 0.0
+                state:
+                  type: string
+                  enum:
+                    - passed
+                    - failed
+                    - ongoing
+                    - planned
+                student:
+                  $ref: '#/components/schemas/Student/properties/id'
+                module:
+                  $ref: '#/components/schemas/Module/properties/id'
+                semester:
+                  type: string
+                  example: fs20
+                weekday:
+                  type: integer
+                  enum:
+                    - 0
+                    - 1
+                    - 2
+                    - 3
+                    - 4
+                    - 5
+                    - 6
+                  default: 0
+                timeStart:
+                  type: string
+                  example: '08:15'
+                  default: '00:00'
+                timeEnd:
+                  type: string
+                  example: '11:00'
+                  default: '01:00'
+      description: ""
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModuleVisit'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+    put:
+      tags:
+        - modulevisit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ModuleVisit'
+      description: ""
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModuleVisit'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /modulevisits/{id}:
+    get:
+      tags:
+        - modulevisit
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The modulevisit id
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleVisit'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+    put:
+      tags:
+        - modulevisit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModuleVisit'
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The moduleisit id
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleVisit'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+    delete:
+      tags:
+        - modulevisit
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The moduleisit id
+          schema:
+            type: string
+      responses:
+        204:
+          $ref: '#/components/responses/NoContent'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+
+components:
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    NoContent:
+      description: No content
+    UnauthorizedError:
+      description: Access token is missing or invalid
+    NotFoundError:
+      description: Not found
+    BadRequestError:
+      description: Bad request
+
+  schemas:
+    Degree:
+      description: "Stellt einen Studiengang dar, mit all den Modulgruppen und der möglichen Profilierungen"
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModuleGroup/properties/id'
+        profile:
+          type: array
+          items:
+            $ref: '#/components/schemas/Profile/properties/id'
+
+    Module:
+      description: "Modulbeschreibung"
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          example: Workshop Distributed Software Systems
+        code:
+          type: string
+          example: wodss
+        credits:
+          type: integer
+          example: 3
+        hs:
+          type: boolean
+          example: true
+        fs:
+          type: boolean
+          example: true
+        requirements:
+          description: The ID's of the modules which are recommended as prerequisites
+          type: array
+          items:
+            $ref: '#/components/schemas/Module/properties/id'
+
+    ModuleGroup:
+      description: "Eine Gruppe von zusammengehörenden Modulen wie z.B Programming oder Mathematik. Mit Minima wir die Anzahl zu erfüllenden Modulen aus dem Array Module definiert."
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        parent:
+          type: string
+        modules:
+          type: array
+          items:
+            $ref: '#/components/schemas/Module/properties/id'
+        minima:
+          type: integer
+          example: 18
+          description: 'Semantik, ob Anzahl Credits oder Anzahl Module noch nicht klar. Abhàngig von GraphQL Schnittstelle.'
+
+    Profile:
+      description: "Eine Vertiefung aus einem bestimmten Studiengang. Im Gegensatz zu einer Modulgruppe sind Profile Studiengang spezifisch. Die Modulgruppe Programming gibt aus auch für ICompetenc aber die Vertiefung Distributed Software Systems nicht."
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        modules:
+          type: array
+          items:
+            $ref: '#/components/schemas/Module/properties/id'
+        minima:
+          type: integer
+          example: 18
+          description: 'Semantik, ob Anzahl Credits oder Anzahl Module noch nicht klar. Abhàngig von GraphQL Schnittstelle.'
+
+    Student:
+      type: object
+      description: "Ein Student besucht einen bestimmten Studiengang (Degree)."
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          minLength: 6
+          maxLength: 320
+        semester:
+          type: string
+        degree:
+          type: string
+
+    ModuleVisit:
+      type: object
+      description: "Belegte Module, wobei timeStart und End für die Modulplanung verwendet werden kann."
+      properties:
+        id:
+          type: string
+        grade:
+          type: number
+          format: float
+          example: 5.5
+          default: 0.0
+        state:
+          type: string
+          enum:
+            - passed
+            - failed
+            - ongoing
+            - planned
+        student:
+          $ref: '#/components/schemas/Student/properties/id'
+        module:
+          $ref: '#/components/schemas/Module/properties/id'
+        semester:
+          type: string
+          example: fs20
+        weekday:
+          type: integer
+          enum:
+            - 0
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+          description: '0 = Montag'
+          default: 0
+        timeStart:
+          type: string
+          example: '08:15'
+          default: '00:00'
+        timeEnd:
+          type: string
+          example: '11:00'
+          default: '01:00'
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: 'enthält die user-id im Attribut "sub"'
+        refreshToken:
+          type: string
