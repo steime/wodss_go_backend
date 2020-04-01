@@ -18,15 +18,10 @@ import (
 func main() {
 	fmt.Printf("Server started on port 8080...\n")
 	repository := mySQL.NewMySqlRepository()
-	util.GetAllModules(repository)
-	util.GetAllModuleGroups(repository)
-	/*
-	headersOk := handlers.AllowedHeaders([]string{"*"})
-	originsOk := handlers.AllowedOrigins([]string{os.Getenv("ORIGIN_ALLOWED")})
-	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
-	corsRouter := handlers.CORS(originsOk, headersOk, methodsOk)(router.NewRouter(repository))
+	util.FetchAllModules(repository)
+	util.FetchAllModuleGroups(repository)
+	util.FetchAllDegrees(repository)
 
-	 */
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"http://localhost:4200"},
 		AllowedHeaders: []string{"*"},

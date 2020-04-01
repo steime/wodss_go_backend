@@ -37,19 +37,18 @@ query {
   }
 }`
 
-func GetAllModules(repository persistence.Repository){
+func FetchAllModules(repository persistence.Repository){
 	client, ctx := graphQlConnector()
 
 	req := graphql.NewRequest(moduleQuery)
 
 	resp := &ModuleResponse{}
 
-	err := client.Run(ctx, req, resp)
-	if err != nil {
-		log.Fatal(err)
+	if err := client.Run(ctx, req, resp); err != nil {
+		log.Print(err)
+	} else {
+		repository.SaveAllModules(resp.Modules)
 	}
-
-	repository.SaveAllModules(resp.Modules)
 }
 
 type ModuleGroupsResponse struct {
@@ -72,17 +71,18 @@ query{
 }
 `
 
-func GetAllModuleGroups(repository persistence.Repository){
+func FetchAllModuleGroups(repository persistence.Repository){
 	client, ctx := graphQlConnector()
 
 	req := graphql.NewRequest(moduleGroupQuery)
 
 	resp := &ModuleGroupsResponse{}
 
-	err := client.Run(ctx, req, resp)
-	if err != nil {
-		log.Fatal(err)
+	if err := client.Run(ctx, req, resp);err != nil {
+		log.Print(err)
+	} else {
+		repository.SaveAllModuleGroups(resp.ModuleGroups)
 	}
-
-	repository.SaveAllModuleGroups(resp.ModuleGroups)
 }
+
+
