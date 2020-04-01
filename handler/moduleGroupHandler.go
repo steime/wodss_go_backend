@@ -8,6 +8,14 @@ import (
 	"net/http"
 )
 
+type ModuleGroupsResponse struct {
+	ID string
+	Name string
+	Minima uint
+	Parent string
+	ModulesList []string
+}
+
 func GetAllModuleGroups(repository persistence.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if moduleGroups , error := repository.GetAllModuleGroups(); error !=nil {
@@ -53,12 +61,4 @@ func GetModuleGroupById(repository persistence.Repository) http.Handler {
 			json.NewEncoder(w).Encode(resp)
 		}
 	})
-}
-
-type ModuleGroupsResponse struct {
-	ID string
-	Name string
-	Minima uint
-	Parent string
-	ModulesList []string
 }

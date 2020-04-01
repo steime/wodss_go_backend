@@ -13,7 +13,9 @@ type Repository interface {
 	GetAllModuleGroups() ([]ModuleGroup,error)
 	SaveAllModuleGroups([]ModuleGroup)
 	GetModuleGroupById(id string) (ModuleGroup,error)
+	GetAllDegrees() ([]Degree,error)
 	SaveAllDegrees([]Degree)
+	GetDegreeById(id string) (Degree,error)
 }
 
 type DefaultRepository struct {
