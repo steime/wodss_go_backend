@@ -36,7 +36,7 @@ func GetAllDegrees(repository persistence.Repository) http.Handler {
 	})
 }
 
-func GetDegreesById(repository persistence.Repository) http.Handler {
+func GetDegreeById(repository persistence.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id := vars["id"]

@@ -3,6 +3,7 @@ package mySQL
 import (
 	"fmt"
 	"github.com/steime/wodss_go_backend/persistence"
+	"strconv"
 )
 
 func (r *MySqlRepository) SaveAllDegrees(degrees []persistence.Degree){
@@ -10,4 +11,25 @@ func (r *MySqlRepository) SaveAllDegrees(degrees []persistence.Degree){
 		fmt.Println(d)
 		r.db.Create(&d)
 	}
+}
+
+func (r *MySqlRepository) GetAllDegrees() ([]persistence.Degree,error) {
+	var degrees []persistence.Degree
+	if result := r.db.Preload("Groups").Find(&degrees); result.Error != nil {
+		return degrees,result.Error
+	} else {
+		return degrees,nil
+	}
+}
+
+func (r *MySqlRepository) GetDegreeById(id string) (persistence.Degree,error) {
+	var degree persistence.Degree
+	if i,err := strconv.Atoi(id); err != nil {
+		return degree, err
+	} else if result := r.db.Preload("Groups").Find(&degree,i); result.Error != nil {
+		return degree,result.Error
+	} else {
+		return degree,nil
+	}
+
 }
