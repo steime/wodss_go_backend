@@ -12,6 +12,7 @@ func NewRouter(repository persistence.Repository) *mux.Router {
 	r := s.PathPrefix("/api").Subrouter()
 	// Unprotected Routes
 	r.HandleFunc("/",handler.IndexHandler()).Methods("GET")
+	r.HandleFunc("/test",handler.StringHandler()).Methods("GET")
 	r.HandleFunc("/auth/login",handler.Login(repository)).Methods("POST")
 	r.HandleFunc("/students", handler.CreateStudent(repository)).Methods("POST")
 	// Protected Routes with JWT Middleware
