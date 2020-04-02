@@ -37,3 +37,18 @@ func CheckBodyID(r *http.Request, id uint) bool {
 		return false
 	}
 }
+
+func CheckQueryID(r *http.Request, id string) bool {
+	ctx := r.Context()
+	tk := ctx.Value("student")
+	token, _ := jwt.Parse(tk.(string), func(token *jwt.Token) (i interface{}, err error) {
+		return []byte("secret"), nil
+	})
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		claimId := int(claims["sub"].(float64))
+		studId := strconv.Itoa(claimId)
+		return studId == id
+	} else {
+		return false
+	}
+}

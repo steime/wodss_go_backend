@@ -24,6 +24,15 @@ func (r *MySqlRepository) CreateModuleVisit(visit *persistence.ModuleVisit) (*pe
 	}
 }
 
+func (r *MySqlRepository) GetAllModuleVisits(studentId string) ([]persistence.ModuleVisit,error) {
+	var visits []persistence.ModuleVisit
+	if result := r.db.Where("student = ?",studentId).Find(&visits); result.Error != nil {
+		return visits,result.Error
+	} else {
+		return visits,nil
+	}
+}
+
 func (r *MySqlRepository) CheckIfStudentExists(id uint) bool {
 	var student persistence.Student
 	if result := r.db.Find(&student,id); result.Error != nil {
