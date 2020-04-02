@@ -26,6 +26,7 @@ func NewRouter(repository persistence.Repository) *mux.Router {
 	r.HandleFunc("/auth/refresh",JwtVerify(handler.RefreshToken(repository))).Methods("POST")
 	r.HandleFunc("/degree",JwtVerify(handler.GetAllDegrees(repository))).Methods("GET")
 	r.HandleFunc("/degree/{id}",JwtVerify(handler.GetDegreeById(repository))).Methods("GET")
+	r.HandleFunc("/modulevisits",JwtVerify(handler.CreateModuleVisit(repository))).Methods("POST")
 
 	return r
 }

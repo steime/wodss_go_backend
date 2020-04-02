@@ -16,6 +16,7 @@ type Repository interface {
 	GetAllDegrees() ([]Degree,error)
 	SaveAllDegrees([]Degree)
 	GetDegreeById(id string) (Degree,error)
+	CreateModuleVisit(visit *ModuleVisit) (*ModuleVisit,error)
 }
 
 type DefaultRepository struct {

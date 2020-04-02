@@ -1,8 +1,5 @@
 package persistence
 
-
-
-//User type for User Handlers
 type Student struct {
 	ID uint `json:"id,omitempty,string" validate:"required"`
 	Email string `json:"email,omitempty" validate:"required,email"`
