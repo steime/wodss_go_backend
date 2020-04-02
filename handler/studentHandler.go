@@ -14,16 +14,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type CreateBody struct {
-	Email string `json:"email,omitempty" validate:"required,email,min=6,max=320"`
-	Password string `json:"password,omitempty" validate:"required,min=10"`
-	Semester string `json:"semester,omitempty" validate:"required"`
-	Degree string `json:"degree,omitempty" validate:"required,alpha"`
-}
-
 func CreateStudent(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		createBody := &CreateBody{}
+		createBody := &persistence.CreateStudentBody{}
 		student := &persistence.Student{}
 		if err := json.NewDecoder(r.Body).Decode(createBody); err != nil {
 			log.Print(err)
@@ -100,7 +93,9 @@ func UpdateStudent(repository persistence.Repository) http.Handler {
 func DeleteStudent(repository persistence.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		checked,id := util.CheckID(r)
-		if error := repository.DeleteStudent(id); error != nil || !checked {
+		if !checked {
+			w.WriteHeader(http.StatusBadRequest)
+		} else if error := repository.DeleteStudent(id); error != nil {
 			log.Print(error)
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
