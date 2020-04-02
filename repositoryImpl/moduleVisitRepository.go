@@ -13,7 +13,7 @@ func (r *MySqlRepository) CreateModuleVisit(visit *persistence.ModuleVisit) (*pe
 		return visit,errors.New("student not existing")
 	} else if !r.CheckIfModuleExists(moduleID) {
 		return visit,errors.New("module not existing")
-	} else if r.CheckIfModuleVisitExists(moduleID) {
+	} else if r.CheckIfModuleVisitExists(studentID,moduleID) {
 		return visit,errors.New("moduleVisit for this module exists")
 	} else {
 		if result := r.db.Create(&visit); result.Error != nil {
@@ -44,9 +44,9 @@ func (r *MySqlRepository) CheckIfModuleExists(id string) bool {
 	}
 }
 
-func (r *MySqlRepository) CheckIfModuleVisitExists(id string) bool {
+func (r *MySqlRepository) CheckIfModuleVisitExists(studentID uint,moduleID string) bool {
 	var visit persistence.ModuleVisit
-	if result := r.db.Where("module = ?", id).First(&visit); result.Error != nil {
+	if result := r.db.Where("module = ? AND student = ?", moduleID,studentID).First(&visit); result.Error != nil {
 		return false
 	} else {
 		return true
