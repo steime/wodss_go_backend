@@ -65,3 +65,20 @@ func GetAllModuleVisits(repository persistence.Repository) http.Handler {
 		}
 	})
 }
+
+func GetModuleVisitById (repository persistence.Repository) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		params := mux.Vars(r)
+		visitId := params["id"]
+		if studentId, err := util.GetStudentIdFromToken(r); err != nil {
+			log.Print(err)
+			w.WriteHeader(http.StatusBadRequest)
+		} else if visit , err := repository.GetModuleVisitById(visitId,studentId); err != nil {
+			log.Print(err)
+			w.WriteHeader(http.StatusBadRequest)
+		} else {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(visit)
+		}
+	})
+}

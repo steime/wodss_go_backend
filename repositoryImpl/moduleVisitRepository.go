@@ -33,6 +33,15 @@ func (r *MySqlRepository) GetAllModuleVisits(studentId string) ([]persistence.Mo
 	}
 }
 
+func (r *MySqlRepository) GetModuleVisitById(visitId string, studentId string) (persistence.ModuleVisit,error) {
+	var visit persistence.ModuleVisit
+	if result := r.db.Where("id = ? AND student = ?", visitId,studentId).First(&visit); result.Error != nil {
+		return visit,result.Error
+	} else {
+		return visit,nil
+	}
+}
+
 func (r *MySqlRepository) CheckIfStudentExists(id uint) bool {
 	var student persistence.Student
 	if result := r.db.Find(&student,id); result.Error != nil {
