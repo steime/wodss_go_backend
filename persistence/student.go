@@ -2,10 +2,10 @@ package persistence
 
 type Student struct {
 	ID uint `json:"id,omitempty,string" validate:"required"`
-	Email string `json:"email,omitempty" validate:"required,email"`
+	Email string `json:"email,omitempty" validate:"required,email,min=6,max=320"`
 	Semester string `json:"semester,omitempty" validate:"required"`
 	Password string `json:"-"`
-	Degree string `json:"degree,omitempty" validate:"required"`
+	Degree string `json:"degree,omitempty" validate:"required,numeric"`
 }
 
 type CreateStudentBody struct {
