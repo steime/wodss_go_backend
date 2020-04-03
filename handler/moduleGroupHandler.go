@@ -16,11 +16,16 @@ func GetAllModuleGroups(repository persistence.Repository) http.Handler {
 		} else {
 			var resp []persistence.ModuleGroupsResponse
 			var modresp persistence.ModuleGroupsResponse
+			epmtyString := ""
 			for _,group := range moduleGroups {
 				modresp.ID = group.ID
 				modresp.Name = group.Name
 				modresp.Minima = group.Minima
-				modresp.Parent = group.Parent.Parent
+				if group.Parent.Parent == &epmtyString{
+					modresp.Parent = nil
+				} else {
+					modresp.Parent = group.Parent.Parent
+				}
 				for _, m := range group.ModulesList {
 					modresp.ModulesList = append(modresp.ModulesList, m.ModuleID)
 				}
@@ -41,11 +46,16 @@ func GetModuleGroupById(repository persistence.Repository) http.Handler {
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
 			var resp persistence.ModuleGroupsResponse
+			epmtyString := ""
 			// Parse DB Data to response format
 			resp.ID = moduleGroup.ID
 			resp.Name = moduleGroup.Name
 			resp.Minima = moduleGroup.Minima
-			resp.Parent = moduleGroup.Parent.Parent
+			if moduleGroup.Parent.Parent == &epmtyString{
+				resp.Parent = nil
+			} else {
+				resp.Parent = moduleGroup.Parent.Parent
+			}
 			for _, m := range moduleGroup.ModulesList {
 				resp.ModulesList = append(resp.ModulesList, m.ModuleID)
 			}

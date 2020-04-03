@@ -10,7 +10,7 @@ type ModuleGroup struct {
 
 type Parent struct {
 	ModuleGroupID string `json:"-"`
-	Parent string `json:"id"`
+	Parent *string `json:"id"`
 }
 
 type ModulesList struct {
@@ -22,6 +22,6 @@ type ModuleGroupsResponse struct {
 	ID string `json:"id"`
 	Name string `json:"name"`
 	Minima uint `json:"minima"`
-	Parent string `json:"parent"`
-	ModulesList []string `json:"modules_list"`
+	Parent *string `json:"parent"`
+	ModulesList []string `json:"modules"`
 }
