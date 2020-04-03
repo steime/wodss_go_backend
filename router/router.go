@@ -15,6 +15,8 @@ func NewRouter(repository persistence.Repository) *mux.Router {
 	r.HandleFunc("/test",handler.StringHandler()).Methods("GET")
 	r.HandleFunc("/auth/login",handler.Login(repository)).Methods("POST")
 	r.HandleFunc("/students", handler.CreateStudent(repository)).Methods("POST")
+	r.HandleFunc("/degree",handler.GetAllDegrees(repository)).Methods("GET")
+	r.HandleFunc("/degree/{id}",handler.GetDegreeById(repository)).Methods("GET")
 	// Protected Routes with JWT Middleware
 	r.HandleFunc("/modules",JwtVerify(handler.GetAllModules(repository))).Methods("GET")
 	r.HandleFunc("/modules/{id}",JwtVerify(handler.GetModuleById(repository))).Methods("GET")
@@ -24,8 +26,6 @@ func NewRouter(repository persistence.Repository) *mux.Router {
 	r.HandleFunc("/students/{id}",JwtVerify(handler.UpdateStudent(repository))).Methods("PUT")
 	r.HandleFunc("/students/{id}",JwtVerify(handler.DeleteStudent(repository))).Methods("DELETE")
 	r.HandleFunc("/auth/refresh",JwtVerify(handler.RefreshToken(repository))).Methods("POST")
-	r.HandleFunc("/degree",JwtVerify(handler.GetAllDegrees(repository))).Methods("GET")
-	r.HandleFunc("/degree/{id}",JwtVerify(handler.GetDegreeById(repository))).Methods("GET")
 	r.HandleFunc("/modulevisits",JwtVerify(handler.CreateModuleVisit(repository))).Methods("POST")
 	r.HandleFunc("/modulevisits",JwtVerify(handler.GetAllModuleVisits(repository))).Queries("student","{student}").Methods("GET")
 	r.HandleFunc("/modulevisits/{id}",JwtVerify(handler.GetModuleVisitById(repository))).Methods("GET")

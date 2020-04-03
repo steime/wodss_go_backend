@@ -14,8 +14,8 @@ type DegreeResponse struct {
 	Groups []string
 }
 
-func GetAllDegrees(repository persistence.Repository) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func GetAllDegrees(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		if degrees , error := repository.GetAllDegrees(); error != nil {
 			log.Print(error)
 			w.WriteHeader(http.StatusBadRequest)
@@ -33,11 +33,11 @@ func GetAllDegrees(repository persistence.Repository) http.Handler {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(resp)
 		}
-	})
+	}
 }
 
-func GetDegreeById(repository persistence.Repository) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func GetDegreeById(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id := vars["id"]
 		if degree, error := repository.GetDegreeById(id); error != nil  {
@@ -53,5 +53,5 @@ func GetDegreeById(repository persistence.Repository) http.Handler {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(resp)
 		}
-	})
+	}
 }
