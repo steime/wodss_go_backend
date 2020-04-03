@@ -29,6 +29,7 @@ func NewRouter(repository persistence.Repository) *mux.Router {
 	r.HandleFunc("/modulevisits",JwtVerify(handler.CreateModuleVisit(repository))).Methods("POST")
 	r.HandleFunc("/modulevisits",JwtVerify(handler.GetAllModuleVisits(repository))).Queries("student","{student}").Methods("GET")
 	r.HandleFunc("/modulevisits/{id}",JwtVerify(handler.GetModuleVisitById(repository))).Methods("GET")
+	r.HandleFunc("/modulevisits/{id}",JwtVerify(handler.UpdateModuleVisit(repository))).Methods("PUT")
 
 	return r
 }

@@ -19,6 +19,7 @@ type Repository interface {
 	CreateModuleVisit(visit *ModuleVisit) (*ModuleVisit,error)
 	GetAllModuleVisits(studentId string) ([]ModuleVisit,error)
 	GetModuleVisitById(moduleId string,studentId string) (ModuleVisit,error)
+	UpdateModuleVisit(visit *ModuleVisit) (*ModuleVisit,error)
 }
 
 type DefaultRepository struct {

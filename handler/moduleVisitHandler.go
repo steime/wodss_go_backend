@@ -8,6 +8,7 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func CreateModuleVisit(repository persistence.Repository) http.Handler {
@@ -79,6 +80,41 @@ func GetModuleVisitById (repository persistence.Repository) http.Handler {
 		} else {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(visit)
+		}
+	})
+}
+
+func UpdateModuleVisit (repository persistence.Repository) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		visit := &persistence.ModuleVisit{}
+		vars := mux.Vars(r)
+		visitId := vars["id"]
+		if err := json.NewDecoder(r.Body).Decode(visit); err != nil {
+			log.Print(err)
+			w.WriteHeader(http.StatusBadRequest)
+		} else if studentId, err := util.GetStudentIdFromToken(r); err != nil {
+			log.Print(err)
+			w.WriteHeader(http.StatusBadRequest)
+		} else if bodyId := strconv.Itoa(int(visit.ID)); bodyId != visitId {
+			log.Print("BodyId doesn't match pathId")
+			w.WriteHeader(http.StatusBadRequest)
+		} else if bodyStudentId := strconv.Itoa(int(visit.Student)); bodyStudentId != studentId {
+			log.Print("BodyStudentId doesn't match StudentId")
+			w.WriteHeader(http.StatusBadRequest)
+		} else {
+			validate := validator.New()
+			if err = validate.Struct(visit); err != nil {
+				log.Print(err)
+				w.WriteHeader(http.StatusBadRequest)
+			} else {
+				if updVisit, err := repository.UpdateModuleVisit(visit); err !=nil {
+					log.Print(err)
+					w.WriteHeader(http.StatusBadRequest)
+				} else {
+					w.Header().Set("Content-Type", "application/json")
+					json.NewEncoder(w).Encode(updVisit)
+				}
+			}
 		}
 	})
 }

@@ -42,6 +42,25 @@ func (r *MySqlRepository) GetModuleVisitById(visitId string, studentId string) (
 	}
 }
 
+func (r *MySqlRepository) UpdateModuleVisit(visit *persistence.ModuleVisit) (*persistence.ModuleVisit,error) {
+	if !r.CheckIfModuleExists(visit.Module) {
+		return visit,errors.New("module not existing")
+	} else if result := r.db.Model(&visit).Omit("id").Update(persistence.ModuleVisit{
+		Grade:     visit.Grade,
+		State:     visit.State,
+		Student:   visit.Student,
+		Module:    visit.Module,
+		Semester:  visit.Semester,
+		Weekday:   visit.Weekday,
+		TimeStart: visit.TimeStart,
+		TimeEnd:   visit.TimeEnd,
+	}); result.Error !=nil {
+		return visit,result.Error
+	} else {
+		return visit,nil
+	}
+}
+
 func (r *MySqlRepository) CheckIfStudentExists(id uint) bool {
 	var student persistence.Student
 	if result := r.db.Find(&student,id); result.Error != nil {
