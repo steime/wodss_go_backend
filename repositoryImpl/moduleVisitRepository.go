@@ -61,6 +61,17 @@ func (r *MySqlRepository) UpdateModuleVisit(visit *persistence.ModuleVisit) (*pe
 	}
 }
 
+func (r *MySqlRepository) DeleteModuleVisit(visitId string, studentId string) error {
+	var visit persistence.ModuleVisit
+	if result := r.db.Where("id = ? AND student = ?",visitId,studentId).First(&visit); result.Error != nil {
+		return result.Error
+	} else if result = r.db.Delete(visit); result.Error != nil {
+		return result.Error
+	} else {
+		return nil
+	}
+}
+
 func (r *MySqlRepository) CheckIfStudentExists(id uint) bool {
 	var student persistence.Student
 	if result := r.db.Find(&student,id); result.Error != nil {

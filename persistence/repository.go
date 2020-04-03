@@ -20,6 +20,7 @@ type Repository interface {
 	GetAllModuleVisits(studentId string) ([]ModuleVisit,error)
 	GetModuleVisitById(moduleId string,studentId string) (ModuleVisit,error)
 	UpdateModuleVisit(visit *ModuleVisit) (*ModuleVisit,error)
+	DeleteModuleVisit(visitId string, studentId string) error
 }
 
 type DefaultRepository struct {

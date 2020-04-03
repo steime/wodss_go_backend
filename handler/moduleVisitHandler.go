@@ -118,3 +118,19 @@ func UpdateModuleVisit (repository persistence.Repository) http.Handler {
 		}
 	})
 }
+
+func DeleteModuleVisit(repository persistence.Repository) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		visitId := vars["id"]
+		if  studentId, err := util.GetStudentIdFromToken(r); err != nil {
+			log.Print(err)
+			w.WriteHeader(http.StatusBadRequest)
+		} else if error := repository.DeleteModuleVisit(visitId,studentId); error != nil {
+			log.Print(error)
+			w.WriteHeader(http.StatusBadRequest)
+		} else {
+			w.WriteHeader(http.StatusNoContent)
+		}
+	})
+}
