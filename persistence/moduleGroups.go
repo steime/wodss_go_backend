@@ -17,3 +17,11 @@ type ModulesList struct {
 	ModuleGroupID string `json:"-"`
 	ModuleID string `json:"id"`
 }
+
+type ModuleGroupsResponse struct {
+	ID string `json:"id"`
+	Name string `json:"name"`
+	Minima uint `json:"minima"`
+	Parent string `json:"parent"`
+	ModulesList []string `json:"modules_list"`
+}

@@ -8,22 +8,14 @@ import (
 	"net/http"
 )
 
-type ModuleGroupsResponse struct {
-	ID string
-	Name string
-	Minima uint
-	Parent string
-	ModulesList []string
-}
-
 func GetAllModuleGroups(repository persistence.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if moduleGroups , error := repository.GetAllModuleGroups(); error !=nil {
 			log.Print(error)
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
-			var resp []ModuleGroupsResponse
-			var modresp ModuleGroupsResponse
+			var resp []persistence.ModuleGroupsResponse
+			var modresp persistence.ModuleGroupsResponse
 			for _,group := range moduleGroups {
 				modresp.ID = group.ID
 				modresp.Name = group.Name
@@ -48,7 +40,7 @@ func GetModuleGroupById(repository persistence.Repository) http.Handler {
 			log.Print(error)
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
-			var resp ModuleGroupsResponse
+			var resp persistence.ModuleGroupsResponse
 			// Parse DB Data to response format
 			resp.ID = moduleGroup.ID
 			resp.Name = moduleGroup.Name
