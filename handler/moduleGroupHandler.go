@@ -26,7 +26,6 @@ func GetAllModuleGroups(repository persistence.Repository) http.Handler {
 				} else {
 					modresp.Parent = group.Parent.Parent
 				}
-
 				for _, m := range group.ModulesList {
 					modresp.ModulesList = append(modresp.ModulesList, m.ModuleID)
 				}

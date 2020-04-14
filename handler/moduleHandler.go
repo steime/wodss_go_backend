@@ -28,8 +28,20 @@ func GetModuleById(repository persistence.Repository) http.Handler {
 			log.Print(error)
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
+			var resp persistence.ModuleResponse
+			//emptyString := ""
+			resp.ID = module.ID
+			resp.Name = module.Name
+			resp.Credits = module.Credits
+			resp.Code = module.Code
+			resp.Fs = module.Fs
+			resp.Hs = module.Hs
+			resp.Msp = module.Msp
+			for _ , m := range module.Requirements {
+				resp.Requirements = append(resp.Requirements,m.ReqID)
+			}
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(module)
+			json.NewEncoder(w).Encode(resp)
 		}
 	})
 }
