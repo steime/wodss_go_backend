@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/mux"
 	"github.com/steime/wodss_go_backend/persistence"
 	"github.com/steime/wodss_go_backend/util"
 	"log"
 	"net/http"
+	"net/smtp"
 	"time"
 )
 
@@ -95,4 +97,37 @@ func generateTokenPair(studentID uint) (map[string]string, error) {
 		"token":  t,
 		"refreshToken": rt,
 	}, nil
+}
+
+func Forgot(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		params := mux.Vars(r)
+		mail := params["mail"]
+		if !util.ValidateMail(mail) {
+			log.Print("Mail Address invalid")
+			w.WriteHeader(http.StatusBadRequest)
+		} else {
+			if err := repository.ForgotPassword(mail); err != nil {
+				log.Print("Mail Address not existing")
+				w.WriteHeader(http.StatusBadRequest)
+			} else {
+				token := jwt.New(jwt.SigningMethodHS256)
+				claims := token.Claims.(jwt.MapClaims)
+				claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
+				if ft, err := token.SignedString([]byte("secret")); err != nil {
+					log.Print("Token Creation failed")
+				} else {
+					auth := smtp.PlainAuth("", "wodssgoserver@gmail.com", "", "smtp.gmail.com")
+					to := []string{mail}
+					text := "Sie können diesen Token hier eingeben und ihr Passwort zurücksetzen \n" + ft
+					msg := []byte(text)
+					err := smtp.SendMail("smtp.gmail.com:587", auth, "wodssgoserver@gmail.com", to, msg)
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+			}
+		}
+		w.WriteHeader(http.StatusOK)
+	}
 }

@@ -21,6 +21,7 @@ type Repository interface {
 	GetModuleVisitById(moduleId string,studentId string) (ModuleVisit,error)
 	UpdateModuleVisit(visit *ModuleVisit) (*ModuleVisit,error)
 	DeleteModuleVisit(visitId string, studentId string) error
+	ForgotPassword(mail string) error
 }
 
 type DefaultRepository struct {
