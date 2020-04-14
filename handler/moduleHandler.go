@@ -14,8 +14,23 @@ func GetAllModules(repository persistence.Repository) http.Handler {
 			log.Print(error)
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
+			var resp []persistence.ModuleResponse
+			for _ , module := range modules {
+				var modResp persistence.ModuleResponse
+				modResp.ID = module.ID
+				modResp.Name = module.Name
+				modResp.Credits = module.Credits
+				modResp.Code = module.Code
+				modResp.Fs = module.Fs
+				modResp.Hs = module.Hs
+				modResp.Msp = module.Msp
+				for _ , m := range module.Requirements {
+					modResp.Requirements = append(modResp.Requirements,m.ReqID)
+				}
+				resp = append(resp, modResp)
+			}
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(modules)
+			json.NewEncoder(w).Encode(resp)
 		}
 	})
 }
