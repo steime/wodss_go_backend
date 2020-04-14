@@ -99,7 +99,7 @@ func generateTokenPair(studentID uint) (map[string]string, error) {
 	}, nil
 }
 
-func Forgot(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+func ForgotPassword(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		params := mux.Vars(r)
 		mail := params["mail"]
@@ -116,18 +116,20 @@ func Forgot(repository persistence.Repository) func(w http.ResponseWriter, r *ht
 				claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
 				if ft, err := token.SignedString([]byte("secret")); err != nil {
 					log.Print("Token Creation failed")
+					w.WriteHeader(http.StatusBadRequest)
 				} else {
 					auth := smtp.PlainAuth("", "wodssgoserver@gmail.com", "", "smtp.gmail.com")
 					to := []string{mail}
 					text := "Sie können diesen Token hier eingeben und ihr Passwort zurücksetzen \n" + ft
 					msg := []byte(text)
-					err := smtp.SendMail("smtp.gmail.com:587", auth, "wodssgoserver@gmail.com", to, msg)
-					if err != nil {
-						log.Fatal(err)
+					if err := smtp.SendMail("smtp.gmail.com:587", auth, "wodssgoserver@gmail.com", to, msg); err != nil {
+						log.Print(err)
+						w.WriteHeader(http.StatusBadRequest)
+					} else {
+						w.WriteHeader(http.StatusNoContent)
 					}
 				}
 			}
 		}
-		w.WriteHeader(http.StatusOK)
 	}
 }
