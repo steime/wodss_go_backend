@@ -125,3 +125,5 @@ func (r *MySqlRepository) CheckIfEmailExists(email string) bool {
 	}
 	return false
 }
+
+

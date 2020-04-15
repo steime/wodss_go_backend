@@ -15,6 +15,7 @@ func NewRouter(repository persistence.Repository) *mux.Router {
 	r.HandleFunc("/test",handler.StringHandler()).Methods("GET")
 	r.HandleFunc("/auth/login",handler.Login(repository)).Methods("POST")
 	r.HandleFunc("/auth/forgot",handler.ForgotPassword(repository)).Queries("mail","{mail}").Methods("POST")
+	r.HandleFunc("/auth/reset",handler.ResetPassword(repository)).Methods("POST")
 	r.HandleFunc("/students", handler.CreateStudent(repository)).Methods("POST")
 	r.HandleFunc("/degree",handler.GetAllDegrees(repository)).Methods("GET")
 	r.HandleFunc("/degree/{id}",handler.GetDegreeById(repository)).Methods("GET")

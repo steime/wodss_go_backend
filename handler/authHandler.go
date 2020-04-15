@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/steime/wodss_go_backend/persistence"
 	"github.com/steime/wodss_go_backend/util"
+	"gopkg.in/go-playground/validator.v9"
 	"log"
 	"net/http"
 	"net/smtp"
@@ -17,6 +18,12 @@ type LoginBody struct {
 	Email string `json:"email,omitempty"`
 	Password string `json:"password,omitempty"`
 }
+
+type ForgotTokenContext struct {
+	ForgotToken string
+}
+
+var tok ForgotTokenContext
 
 func Login(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -118,6 +125,7 @@ func ForgotPassword(repository persistence.Repository) func(w http.ResponseWrite
 					log.Print("Token Creation failed")
 					w.WriteHeader(http.StatusBadRequest)
 				} else {
+					tok.ForgotToken = ft
 					auth := smtp.PlainAuth("", "wodssgoserver@gmail.com", "", "smtp.gmail.com")
 					to := []string{mail}
 					text := "Sie können diesen Token hier eingeben und ihr Passwort zurücksetzen \n" + ft
@@ -129,6 +137,35 @@ func ForgotPassword(repository persistence.Repository) func(w http.ResponseWrite
 						w.WriteHeader(http.StatusNoContent)
 					}
 				}
+			}
+		}
+	}
+}
+
+func ResetPassword(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		resetBody := &persistence.PasswordResetBody{}
+		if err := json.NewDecoder(r.Body).Decode(resetBody); err != nil {
+			log.Print(err)
+			w.WriteHeader(http.StatusBadRequest)
+		} else {
+			validate := validator.New()
+			if err = validate.Struct(resetBody) ; err != nil {
+				log.Print(err)
+				w.WriteHeader(http.StatusBadRequest)
+			} else {
+				ft := tok.ForgotToken
+				if ft != resetBody.ForgotToken {
+					ft = ""
+					log.Print("Forgot Token mismatch")
+					w.WriteHeader(http.StatusBadRequest)
+				} else {
+					if err := repository.ResetPassword(resetBody.Email,resetBody.Password); err != nil {
+						log.Print(err)
+						w.WriteHeader(http.StatusBadRequest)
+					} else {
+						ft = ""
+						w.WriteHeader(http.StatusNoContent)}}
 			}
 		}
 	}
