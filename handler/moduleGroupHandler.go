@@ -16,7 +16,7 @@ func GetAllModuleGroups(repository persistence.Repository) func(w http.ResponseW
 		} else {
 			var resp []persistence.ModuleGroupsResponse
 			for _,group := range moduleGroups {
-				resp = append(resp,ModuleResponseBuilder(group))
+				resp = append(resp, ModuleGroupResponseBuilder(group))
 			}
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(resp)
@@ -38,7 +38,7 @@ func GetAllModuleGroupsByDegree(repository persistence.Repository) func(w http.R
 					log.Print(error)
 					w.WriteHeader(http.StatusBadRequest)
 				} else {
-					resp = append(resp, ModuleResponseBuilder(group))
+					resp = append(resp, ModuleGroupResponseBuilder(group))
 				}
 			}
 			w.Header().Set("Content-Type", "application/json")
@@ -75,7 +75,7 @@ func GetModuleGroupById(repository persistence.Repository) func(w http.ResponseW
 	}
 }
 
-func ModuleResponseBuilder(group persistence.ModuleGroup) persistence.ModuleGroupsResponse{
+func ModuleGroupResponseBuilder(group persistence.ModuleGroup) persistence.ModuleGroupsResponse{
 	var moduleGroupResponse persistence.ModuleGroupsResponse
 	emptyString := ""
 	moduleGroupResponse.ID = group.ID

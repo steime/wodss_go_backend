@@ -16,18 +16,7 @@ func GetAllModules(repository persistence.Repository)func(w http.ResponseWriter,
 		} else {
 			var resp []persistence.ModuleResponse
 			for _ , module := range modules {
-				var modResp persistence.ModuleResponse
-				modResp.ID = module.ID
-				modResp.Name = module.Name
-				modResp.Credits = module.Credits
-				modResp.Code = module.Code
-				modResp.Fs = module.Fs
-				modResp.Hs = module.Hs
-				modResp.Msp = module.Msp
-				for _ , m := range module.Requirements {
-					modResp.Requirements = append(modResp.Requirements,m.ReqID)
-				}
-				resp = append(resp, modResp)
+				resp = append(resp, ModuleResponseBuilder(module))
 			}
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(resp)
@@ -37,24 +26,28 @@ func GetAllModules(repository persistence.Repository)func(w http.ResponseWriter,
 
 func GetAllModulesByDegree(repository persistence.Repository)func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if modules, error := repository.GetAllModules(); error != nil {
+		params := mux.Vars(r)
+		degreeID := params["degree"]
+		var resp []persistence.ModuleResponse
+		if degree, error := repository.GetDegreeById(degreeID); error != nil  {
 			log.Print(error)
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
-			var resp []persistence.ModuleResponse
-			for _ , module := range modules {
-				var modResp persistence.ModuleResponse
-				modResp.ID = module.ID
-				modResp.Name = module.Name
-				modResp.Credits = module.Credits
-				modResp.Code = module.Code
-				modResp.Fs = module.Fs
-				modResp.Hs = module.Hs
-				modResp.Msp = module.Msp
-				for _ , m := range module.Requirements {
-					modResp.Requirements = append(modResp.Requirements,m.ReqID)
+			for _, degreeGroup := range degree.Groups {
+				if group, error := repository.GetModuleGroupById(degreeGroup.GroupID); error != nil {
+					log.Print(error)
+					w.WriteHeader(http.StatusBadRequest)
+				} else {
+					for _, moduleList := range group.ModulesList {
+						if module, error := repository.GetModuleById(moduleList.ModuleID); error != nil {
+							log.Print(error)
+							w.WriteHeader(http.StatusBadRequest)
+						} else {
+							resp = append(resp, ModuleResponseBuilder(module))
+						}
+					}
+
 				}
-				resp = append(resp, modResp)
 			}
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(resp)
@@ -70,20 +63,23 @@ func GetModuleById(repository persistence.Repository) func(w http.ResponseWriter
 			log.Print(error)
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
-			var resp persistence.ModuleResponse
-			//emptyString := ""
-			resp.ID = module.ID
-			resp.Name = module.Name
-			resp.Credits = module.Credits
-			resp.Code = module.Code
-			resp.Fs = module.Fs
-			resp.Hs = module.Hs
-			resp.Msp = module.Msp
-			for _ , m := range module.Requirements {
-				resp.Requirements = append(resp.Requirements,m.ReqID)
-			}
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(resp)
+			json.NewEncoder(w).Encode(ModuleResponseBuilder(module))
 		}
 	}
+}
+
+func ModuleResponseBuilder(module persistence.Module) persistence.ModuleResponse {
+	var resp persistence.ModuleResponse
+	resp.ID = module.ID
+	resp.Name = module.Name
+	resp.Credits = module.Credits
+	resp.Code = module.Code
+	resp.Fs = module.Fs
+	resp.Hs = module.Hs
+	resp.Msp = module.Msp
+	for _ , m := range module.Requirements {
+		resp.Requirements = append(resp.Requirements,m.ReqID)
+	}
+	return resp
 }
