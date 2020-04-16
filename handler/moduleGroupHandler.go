@@ -29,7 +29,6 @@ func GetAllModuleGroups(repository persistence.Repository) func(w http.ResponseW
 				log.Print(error)
 				w.WriteHeader(http.StatusBadRequest)
 			} else {
-
 				for _, degreeGroup := range degree.Groups {
 					if group, error := repository.GetModuleGroupById(degreeGroup.GroupID); error != nil {
 						log.Print(error)

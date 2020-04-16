@@ -26,29 +26,28 @@ func GetAllModules(repository persistence.Repository)func(w http.ResponseWriter,
 				json.NewEncoder(w).Encode(resp)
 			}
 		} else {
-		if degree, error := repository.GetDegreeById(degreeID); error != nil  {
-			log.Print(error)
-			w.WriteHeader(http.StatusBadRequest)
-		} else {
-			for _, degreeGroup := range degree.Groups {
-				if group, error := repository.GetModuleGroupById(degreeGroup.GroupID); error != nil {
-					log.Print(error)
-					w.WriteHeader(http.StatusBadRequest)
-				} else {
-					for _, moduleList := range group.ModulesList {
-						if module, error := repository.GetModuleById(moduleList.ModuleID); error != nil {
-							log.Print(error)
-							w.WriteHeader(http.StatusBadRequest)
-						} else {
-							resp = append(resp, ModuleResponseBuilder(module))
+			if degree, error := repository.GetDegreeById(degreeID); error != nil  {
+				log.Print(error)
+				w.WriteHeader(http.StatusBadRequest)
+			} else {
+				for _, degreeGroup := range degree.Groups {
+					if group, error := repository.GetModuleGroupById(degreeGroup.GroupID); error != nil {
+						log.Print(error)
+						w.WriteHeader(http.StatusBadRequest)
+					} else {
+						for _, moduleList := range group.ModulesList {
+							if module, error := repository.GetModuleById(moduleList.ModuleID); error != nil {
+								log.Print(error)
+								w.WriteHeader(http.StatusBadRequest)
+							} else {
+								resp = append(resp, ModuleResponseBuilder(module))
+							}
 						}
 					}
-
 				}
+				w.Header().Set("Content-Type", "application/json")
+				json.NewEncoder(w).Encode(resp)
 			}
-		}
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(resp)
 		}
 	}
 }
