@@ -8,37 +8,47 @@ import (
 	"net/http"
 )
 
-func GetAllModuleGroups(repository persistence.Repository) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func GetAllModuleGroups(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		if moduleGroups , error := repository.GetAllModuleGroups(); error !=nil {
 			log.Print(error)
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
 			var resp []persistence.ModuleGroupsResponse
-			epmtyString := ""
 			for _,group := range moduleGroups {
-				var modresp persistence.ModuleGroupsResponse
-				modresp.ID = group.ID
-				modresp.Name = group.Name
-				modresp.Minima = group.Minima
-				if group.Parent.Parent == &epmtyString{
-					modresp.Parent = nil
-				} else {
-					modresp.Parent = group.Parent.Parent
-				}
-				for _, m := range group.ModulesList {
-					modresp.ModulesList = append(modresp.ModulesList, m.ModuleID)
-				}
-				resp = append(resp,modresp)
+				resp = append(resp,ModuleResponseBuilder(group))
 			}
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(resp)
 		}
-	})
+	}
 }
 
-func GetModuleGroupById(repository persistence.Repository) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func GetAllModuleGroupsByDegree(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		params := mux.Vars(r)
+		degreeID := params["degree"]
+		if degree, error := repository.GetDegreeById(degreeID); error != nil  {
+			log.Print(error)
+			w.WriteHeader(http.StatusBadRequest)
+		} else {
+			var resp []persistence.ModuleGroupsResponse
+			for _,degreeGroup := range degree.Groups {
+				if group, error := repository.GetModuleGroupById(degreeGroup.GroupID); error != nil {
+					log.Print(error)
+					w.WriteHeader(http.StatusBadRequest)
+				} else {
+					resp = append(resp, ModuleResponseBuilder(group))
+				}
+			}
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(resp)
+		}
+	}
+}
+
+func GetModuleGroupById(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id := vars["id"]
 		if moduleGroup, error := repository.GetModuleGroupById(id); error != nil {
@@ -62,5 +72,22 @@ func GetModuleGroupById(repository persistence.Repository) http.Handler {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(resp)
 		}
-	})
+	}
+}
+
+func ModuleResponseBuilder(group persistence.ModuleGroup) persistence.ModuleGroupsResponse{
+	var moduleGroupResponse persistence.ModuleGroupsResponse
+	emptyString := ""
+	moduleGroupResponse.ID = group.ID
+	moduleGroupResponse.Name = group.Name
+	moduleGroupResponse.Minima = group.Minima
+	if group.Parent.Parent == &emptyString {
+		moduleGroupResponse.Parent = nil
+	} else {
+		moduleGroupResponse.Parent = group.Parent.Parent
+	}
+	for _, m := range group.ModulesList {
+		moduleGroupResponse.ModulesList = append(moduleGroupResponse.ModulesList, m.ModuleID)
+	}
+	return moduleGroupResponse
 }

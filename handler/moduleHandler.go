@@ -8,8 +8,8 @@ import (
 	"net/http"
 )
 
-func GetAllModules(repository persistence.Repository) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func GetAllModules(repository persistence.Repository)func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		if modules, error := repository.GetAllModules(); error != nil {
 			log.Print(error)
 			w.WriteHeader(http.StatusBadRequest)
@@ -32,11 +32,38 @@ func GetAllModules(repository persistence.Repository) http.Handler {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(resp)
 		}
-	})
+	}
 }
 
-func GetModuleById(repository persistence.Repository) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func GetAllModulesByDegree(repository persistence.Repository)func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if modules, error := repository.GetAllModules(); error != nil {
+			log.Print(error)
+			w.WriteHeader(http.StatusBadRequest)
+		} else {
+			var resp []persistence.ModuleResponse
+			for _ , module := range modules {
+				var modResp persistence.ModuleResponse
+				modResp.ID = module.ID
+				modResp.Name = module.Name
+				modResp.Credits = module.Credits
+				modResp.Code = module.Code
+				modResp.Fs = module.Fs
+				modResp.Hs = module.Hs
+				modResp.Msp = module.Msp
+				for _ , m := range module.Requirements {
+					modResp.Requirements = append(modResp.Requirements,m.ReqID)
+				}
+				resp = append(resp, modResp)
+			}
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(resp)
+		}
+	}
+}
+
+func GetModuleById(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id := vars["id"]
 		if module, error := repository.GetModuleById(id); error != nil {
@@ -58,5 +85,5 @@ func GetModuleById(repository persistence.Repository) http.Handler {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(resp)
 		}
-	})
+	}
 }
