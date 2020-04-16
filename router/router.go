@@ -20,10 +20,8 @@ func NewRouter(repository persistence.Repository) *mux.Router {
 	r.HandleFunc("/degree",				handler.GetAllDegrees(repository))					.Methods("GET")
 	r.HandleFunc("/degree/{id}",			handler.GetDegreeById(repository))					.Methods("GET")
 	r.HandleFunc("/modules",				handler.GetAllModules(repository))					.Methods("GET")
-	r.HandleFunc("/modules",				handler.GetAllModulesByDegree(repository))			.Methods("GET").Queries("degree","{degree}")
 	r.HandleFunc("/modules/{id}",			handler.GetModuleById(repository))					.Methods("GET")
 	r.HandleFunc("/modulegroups",			handler.GetAllModuleGroups(repository))				.Methods("GET")
-	r.HandleFunc("/modulegroups",			handler.GetAllModuleGroupsByDegree(repository))		.Methods("GET").Queries("degree","{degree}")
 	r.HandleFunc("/modulegroups/{id}",	handler.GetModuleGroupById(repository))				.Methods("GET")
 	// Protected Routes with JWT Middleware
 	r.HandleFunc("/students/{id}",		JwtVerify(handler.GetStudentById(repository)))		.Methods("GET")

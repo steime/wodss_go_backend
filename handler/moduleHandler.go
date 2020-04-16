@@ -10,25 +10,22 @@ import (
 
 func GetAllModules(repository persistence.Repository)func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if modules, error := repository.GetAllModules(); error != nil {
-			log.Print(error)
-			w.WriteHeader(http.StatusBadRequest)
-		} else {
-			var resp []persistence.ModuleResponse
-			for _ , module := range modules {
-				resp = append(resp, ModuleResponseBuilder(module))
-			}
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(resp)
-		}
-	}
-}
-
-func GetAllModulesByDegree(repository persistence.Repository)func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		params := mux.Vars(r)
-		degreeID := params["degree"]
+		degreeID := r.FormValue("degree")
+		emptyString := ""
 		var resp []persistence.ModuleResponse
+		if degreeID == emptyString {
+			if modules, error := repository.GetAllModules(); error != nil {
+				log.Print(error)
+				w.WriteHeader(http.StatusBadRequest)
+			} else {
+				var resp []persistence.ModuleResponse
+				for _ , module := range modules {
+					resp = append(resp, ModuleResponseBuilder(module))
+				}
+				w.Header().Set("Content-Type", "application/json")
+				json.NewEncoder(w).Encode(resp)
+			}
+		} else {
 		if degree, error := repository.GetDegreeById(degreeID); error != nil  {
 			log.Print(error)
 			w.WriteHeader(http.StatusBadRequest)
@@ -49,6 +46,7 @@ func GetAllModulesByDegree(repository persistence.Repository)func(w http.Respons
 
 				}
 			}
+		}
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(resp)
 		}

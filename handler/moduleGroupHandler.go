@@ -10,39 +10,37 @@ import (
 
 func GetAllModuleGroups(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if moduleGroups , error := repository.GetAllModuleGroups(); error !=nil {
-			log.Print(error)
-			w.WriteHeader(http.StatusBadRequest)
-		} else {
-			var resp []persistence.ModuleGroupsResponse
-			for _,group := range moduleGroups {
-				resp = append(resp, ModuleGroupResponseBuilder(group))
-			}
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(resp)
-		}
-	}
-}
-
-func GetAllModuleGroupsByDegree(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		params := mux.Vars(r)
-		degreeID := params["degree"]
-		if degree, error := repository.GetDegreeById(degreeID); error != nil  {
-			log.Print(error)
-			w.WriteHeader(http.StatusBadRequest)
-		} else {
-			var resp []persistence.ModuleGroupsResponse
-			for _,degreeGroup := range degree.Groups {
-				if group, error := repository.GetModuleGroupById(degreeGroup.GroupID); error != nil {
-					log.Print(error)
-					w.WriteHeader(http.StatusBadRequest)
-				} else {
+		degreeID := r.FormValue("degree")
+		emptyString := ""
+		var resp []persistence.ModuleGroupsResponse
+		if degreeID == emptyString {
+			if moduleGroups , error := repository.GetAllModuleGroups(); error !=nil {
+				log.Print(error)
+				w.WriteHeader(http.StatusBadRequest)
+			} else {
+				for _,group := range moduleGroups {
 					resp = append(resp, ModuleGroupResponseBuilder(group))
 				}
+				w.Header().Set("Content-Type", "application/json")
+				json.NewEncoder(w).Encode(resp)
 			}
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(resp)
+		} else {
+			if degree, error := repository.GetDegreeById(degreeID); error != nil {
+				log.Print(error)
+				w.WriteHeader(http.StatusBadRequest)
+			} else {
+
+				for _, degreeGroup := range degree.Groups {
+					if group, error := repository.GetModuleGroupById(degreeGroup.GroupID); error != nil {
+						log.Print(error)
+						w.WriteHeader(http.StatusBadRequest)
+					} else {
+						resp = append(resp, ModuleGroupResponseBuilder(group))
+					}
+				}
+				w.Header().Set("Content-Type", "application/json")
+				json.NewEncoder(w).Encode(resp)
+			}
 		}
 	}
 }
