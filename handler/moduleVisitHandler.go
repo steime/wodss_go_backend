@@ -52,9 +52,14 @@ func CreateModuleVisit(repository persistence.Repository) http.Handler {
 
 func GetAllModuleVisits(repository persistence.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		params := mux.Vars(r)
-		studentID := params["student"]
-		if !util.CheckQueryID(r,studentID){
+		//params := mux.Vars(r)
+		//studentID := params["student"]
+		studentID := r.FormValue("student")
+		emptyString := ""
+		if studentID == emptyString {
+			log.Print("Query Param missing")
+			w.WriteHeader(http.StatusBadRequest)
+		} else if !util.CheckQueryID(r,studentID){
 			log.Print("Token studentId doesn't match query studentId")
 			w.WriteHeader(http.StatusBadRequest)
 		} else if visits, error := repository.GetAllModuleVisits(studentID); error != nil {
