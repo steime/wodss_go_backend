@@ -50,7 +50,7 @@ func GetModuleGroupById(repository persistence.Repository) func(w http.ResponseW
 		id := vars["id"]
 		if moduleGroup, error := repository.GetModuleGroupById(id); error != nil {
 			log.Print(error)
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusNotFound)
 		} else {
 			var resp persistence.ModuleGroupsResponse
 			epmtyString := ""
