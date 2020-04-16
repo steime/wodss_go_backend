@@ -46,10 +46,12 @@ func CreateStudent(repository persistence.Repository) func(w http.ResponseWriter
 
 func GetStudentById(repository persistence.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		checked,id := util.CheckID(r)
-		if student, err := repository.GetStudentById(id); err != nil || !checked {
-			log.Print(err)
+		if checked,id := util.CheckID(r); !checked {
+			log.Print("param id doesn't match token id")
 			w.WriteHeader(http.StatusBadRequest)
+		} else if student, err := repository.GetStudentById(id); err != nil || !checked {
+			log.Print(err)
+			w.WriteHeader(http.StatusNotFound)
 		} else {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(student)

@@ -108,11 +108,9 @@ func (r *MySqlRepository) FindOne(email, password string) map[string]interface{}
 
 func (r *MySqlRepository) GetStudentById(id string) (persistence.Student,error) {
 	var student persistence.Student
-	i, err := strconv.Atoi(id)
-	if err != nil {
-		panic(err.Error())
-	}
-	if result := r.db.First(&student,i).Scan(&student); result.Error != nil {
+	if i, err := strconv.Atoi(id); err != nil {
+		return student,err
+	} else if result := r.db.First(&student,i).Scan(&student); result.Error != nil {
 		return student, result.Error
 	}
 	return student,nil
