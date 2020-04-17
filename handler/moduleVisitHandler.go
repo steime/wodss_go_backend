@@ -52,8 +52,6 @@ func CreateModuleVisit(repository persistence.Repository) http.Handler {
 
 func GetAllModuleVisits(repository persistence.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		//params := mux.Vars(r)
-		//studentID := params["student"]
 		studentID := r.FormValue("student")
 		emptyString := ""
 		if studentID == emptyString {

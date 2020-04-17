@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -73,4 +74,9 @@ func GetStudentIdFromToken(r *http.Request) (string,error) {
 func ValidateMail(mail string) bool {
 	Re := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
 	return Re.MatchString(mail)
+}
+
+func PrintErrorAndSendBadRequest(w http.ResponseWriter, err error) {
+	log.Print(err)
+	w.WriteHeader(http.StatusBadRequest)
 }
