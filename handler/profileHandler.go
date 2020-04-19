@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/steime/wodss_go_backend/persistence"
 	"github.com/steime/wodss_go_backend/util"
@@ -10,15 +11,26 @@ import (
 
 func GetAllProfiles(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if profiles, err := repository.GetAllProfiles(); err != nil {
-			util.PrintErrorAndSendBadRequest(w, err)
-		} else {
-			var resp []persistence.ProfileResponse
-			for _, profile := range profiles {
-				resp = append(resp,ProfileResponseBuilder(profile))
+		degreeID := r.FormValue("degree")
+		emptyString := ""
+		if degreeID == emptyString {
+			if profiles, err := repository.GetAllProfiles(); err != nil {
+				util.PrintErrorAndSendBadRequest(w, err)
+			} else {
+				var resp []persistence.ProfileResponse
+				for _, profile := range profiles {
+					resp = append(resp, ProfileResponseBuilder(profile))
+				}
+				w.Header().Set("Content-Type", "application/json")
+				json.NewEncoder(w).Encode(resp)
 			}
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(resp)
+		} else {
+			if degree, err := repository.GetDegreeById(degreeID); err != nil  {
+				util.PrintErrorAndSendBadRequest(w,err)
+			} else {
+				fmt.Println(degree)
+				//TODO: implement
+			}
 		}
 	}
 }

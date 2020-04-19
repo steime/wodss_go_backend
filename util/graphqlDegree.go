@@ -18,6 +18,9 @@ query{
 		groups {
 			id
 		}
+		profiles {
+			id 
+		}
 	}
 }
 `
