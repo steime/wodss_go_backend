@@ -23,7 +23,9 @@ type Repository interface {
 	DeleteModuleVisit(visitId string, studentId string) error
 	ForgotPassword(mail string) error
 	ResetPassword(mail string, password string) error
+	GetAllProfiles() ([]Profile,error)
 	SaveAllProfiles([]Profile)
+	GetProfileById(id string) (Profile,error)
 }
 
 type DefaultRepository struct {

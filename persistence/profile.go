@@ -11,3 +11,10 @@ type ListOfModules struct {
 	ProfileID string `json:"-"`
 	ModuleID string `json:"id"`
 }
+
+type ProfileResponse struct {
+	ID string `json:"id"`
+	Name string `json:"name"`
+	ListOfModules []string `json:"modules"`
+	Minima uint `json:"minima"`
+}
