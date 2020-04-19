@@ -21,6 +21,7 @@ func main() {
 	util.FetchAllModules(repository)
 	util.FetchAllModuleGroups(repository)
 	util.FetchAllDegrees(repository)
+	util.FetchAllProfiles(repository)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"http://localhost:4200"},

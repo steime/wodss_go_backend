@@ -23,6 +23,7 @@ type Repository interface {
 	DeleteModuleVisit(visitId string, studentId string) error
 	ForgotPassword(mail string) error
 	ResetPassword(mail string, password string) error
+	SaveAllProfiles([]Profile)
 }
 
 type DefaultRepository struct {

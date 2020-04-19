@@ -29,13 +29,13 @@ func GetAllModules(repository persistence.Repository)func(w http.ResponseWriter,
 				json.NewEncoder(w).Encode(resp)
 			}
 		} else if canVisit == "true" && degreeID == emptyString {
-			if header,err := jwtmiddleware.FromAuthHeader(r); err != nil {
-				util.PrintErrorAndSendBadRequest(w,err)
+			if header, err := jwtmiddleware.FromAuthHeader(r); err != nil {
+				util.PrintErrorAndSendBadRequest(w, err)
 			} else {
 				if token, err := jwt.Parse(header, func(token *jwt.Token) (i interface{}, err error) {
 					return []byte("secret"), nil
 				}); err != nil {
-					util.PrintErrorAndSendBadRequest(w,err)
+					util.PrintErrorAndSendBadRequest(w, err)
 				} else {
 					if claims, ok := token.Claims.(jwt.MapClaims); !ok && !token.Valid {
 						log.Print("Claiming problem with Token")
@@ -44,21 +44,21 @@ func GetAllModules(repository persistence.Repository)func(w http.ResponseWriter,
 						claimId := int(claims["sub"].(float64))
 						studId := strconv.Itoa(claimId)
 						if moduleVisits, err := repository.GetAllModuleVisits(studId); err != nil {
-							util.PrintErrorAndSendBadRequest(w,err)
+							util.PrintErrorAndSendBadRequest(w, err)
 						} else {
 							var forbiddenModulesId []string
-							for _ , moduleVisit := range moduleVisits {
+							for _, moduleVisit := range moduleVisits {
 								if moduleVisit.State == "passed" || moduleVisit.State == "failed" {
 									forbiddenModulesId = append(forbiddenModulesId, moduleVisit.Module)
 								}
 							}
 							if modules, err := repository.GetAllModules(); err != nil {
-								util.PrintErrorAndSendBadRequest(w,err)
+								util.PrintErrorAndSendBadRequest(w, err)
 							} else {
 								var visitableModules []persistence.Module
 								addable := false
-								for _ , module := range modules {
-									for _ , forbiddenModuleId := range forbiddenModulesId {
+								for _, module := range modules {
+									for _, forbiddenModuleId := range forbiddenModulesId {
 										if module.ID == forbiddenModuleId {
 											addable = false
 											break
@@ -67,7 +67,7 @@ func GetAllModules(repository persistence.Repository)func(w http.ResponseWriter,
 										}
 									}
 									if addable {
-										visitableModules = append(visitableModules,module)
+										visitableModules = append(visitableModules, module)
 									}
 								}
 								for _, visitableModule := range visitableModules {
@@ -80,6 +80,8 @@ func GetAllModules(repository persistence.Repository)func(w http.ResponseWriter,
 					}
 				}
 			}
+		} else if canVisit == "true" && degreeID != emptyString {
+			//TODO: Implement combination of the params
 		} else {
 			if degree, err := repository.GetDegreeById(degreeID); err != nil  {
 				util.PrintErrorAndSendBadRequest(w,err)
