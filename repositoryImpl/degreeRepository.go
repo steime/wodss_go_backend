@@ -11,6 +11,12 @@ func (r *MySqlRepository) SaveAllDegrees(degrees []persistence.Degree){
 	}
 }
 
+func (r *MySqlRepository) UpdateAllDegrees(degrees []persistence.Degree){
+	for _ , d := range degrees {
+		r.db.Save(&d)
+	}
+}
+
 func (r *MySqlRepository) GetAllDegrees() ([]persistence.Degree,error) {
 	var degrees []persistence.Degree
 	if result := r.db.Preload("Groups").Preload("ProfilesByDegree").Find(&degrees); result.Error != nil {

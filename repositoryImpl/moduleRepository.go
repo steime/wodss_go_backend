@@ -11,6 +11,12 @@ func (r *MySqlRepository) SaveAllModules(modules []persistence.Module) {
 	}
 }
 
+func (r *MySqlRepository) UpdateAllModules(modules []persistence.Module) {
+	for _, m := range modules {
+		r.db.Save(&m)
+	}
+}
+
 func (r *MySqlRepository) GetAllModules() ([]persistence.Module,error){
 	var modules []persistence.Module
 	if result := r.db.Preload("Requirements").Find(&modules); result.Error != nil {

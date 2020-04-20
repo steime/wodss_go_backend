@@ -11,6 +11,12 @@ func (r *MySqlRepository) SaveAllModuleGroups(moduleGroups []persistence.ModuleG
 	}
 }
 
+func (r *MySqlRepository) UpdateAllModuleGroups(moduleGroups []persistence.ModuleGroup) {
+	for _, m := range moduleGroups {
+		r.db.Save(&m)
+	}
+}
+
 func (r *MySqlRepository) GetAllModuleGroups() ([]persistence.ModuleGroup,error){
 	var moduleGroups []persistence.ModuleGroup
 	if result := r.db.Preload("Parent").Preload("ModulesList").Find(&moduleGroups); result.Error != nil {

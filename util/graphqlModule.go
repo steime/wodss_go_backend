@@ -39,3 +39,19 @@ func FetchAllModules(repository persistence.Repository){
 		repository.SaveAllModules(resp.Modules)
 	}
 }
+
+func UpdateAllModules(repository persistence.Repository)func() {
+	return func() {
+		client, ctx := graphQlConnector()
+
+		req := graphql.NewRequest(moduleQuery)
+
+		resp := &ModuleResponse{}
+
+		if err := client.Run(ctx, req, resp); err != nil {
+			log.Print(err)
+		} else {
+			repository.UpdateAllModules(resp.Modules)
+		}
+	}
+}

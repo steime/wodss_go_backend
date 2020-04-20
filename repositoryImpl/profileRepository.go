@@ -11,6 +11,12 @@ func (r *MySqlRepository) SaveAllProfiles(profiles []persistence.Profile) {
 	}
 }
 
+func (r *MySqlRepository) UpdateAllProfiles(profiles []persistence.Profile) {
+	for _, p := range profiles {
+		r.db.Save(&p)
+	}
+}
+
 func (r *MySqlRepository) GetAllProfiles() ([]persistence.Profile,error) {
 	var profiles []persistence.Profile
 	if result := r.db.Preload("ListOfModules").Find(&profiles); result.Error != nil {

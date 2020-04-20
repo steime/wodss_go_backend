@@ -38,3 +38,19 @@ func FetchAllDegrees(repository persistence.Repository) {
 		repository.SaveAllDegrees(resp.Degrees)
 	}
 }
+
+func UpdateAllDegrees(repository persistence.Repository) func() {
+	return func() {
+		client, ctx := graphQlConnector()
+
+		req := graphql.NewRequest(degreeQuery)
+
+		resp := &DegreeResponse{}
+
+		if err := client.Run(ctx, req, resp); err != nil {
+			log.Print(err)
+		} else {
+			repository.UpdateAllDegrees(resp.Degrees)
+		}
+	}
+}

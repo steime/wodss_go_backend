@@ -7,6 +7,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/joho/godotenv"
 	"github.com/steime/wodss_go_backend/persistence"
+	"github.com/steime/wodss_go_backend/util"
 	"log"
 	"os"
 )
@@ -21,46 +22,44 @@ func NewMySqlRepository() *MySqlRepository {
 	r.Connect()
 	production := os.Getenv("PRODUCTION")
 	if production == "true" {
+		log.Print("prod")
 		if !r.db.HasTable(&persistence.Student{}) {
 			r.db.AutoMigrate(&persistence.Student{})
 		}
 		if !r.db.HasTable(&persistence.Module{}) {
-			r.db.AutoMigrate(&persistence.Module{})
+			r.db.DropTableIfExists(&persistence.Module{},&persistence.Requirements{})
+			r.db.AutoMigrate(&persistence.Module{},&persistence.Requirements{})
+			util.FetchAllModules(&r)
 		}
-		if !r.db.HasTable(&persistence.Requirements{}) {
-			r.db.AutoMigrate(&persistence.Requirements{})
-		}
+		util.UpdateAllModules(&r)
 		if !r.db.HasTable(&persistence.ModuleGroup{}) {
-			r.db.AutoMigrate(&persistence.ModuleGroup{})
+			r.db.DropTableIfExists(&persistence.ModuleGroup{},&persistence.ModulesList{},&persistence.Parent{})
+			r.db.AutoMigrate(&persistence.ModuleGroup{},&persistence.ModulesList{},&persistence.Parent{})
+			util.FetchAllModuleGroups(&r)
 		}
-		if !r.db.HasTable(&persistence.ModulesList{}) {
-			r.db.AutoMigrate(&persistence.ModulesList{})
-		}
-		if !r.db.HasTable(&persistence.Parent{}) {
-			r.db.AutoMigrate(&persistence.Parent{})
-		}
+		util.UpdateAllModuleGroups(&r)
 		if !r.db.HasTable(&persistence.Degree{}) {
-			r.db.AutoMigrate(&persistence.Degree{})
+			r.db.DropTableIfExists(&persistence.Degree{},&persistence.Groups{},&persistence.ProfilesByDegree{})
+			r.db.AutoMigrate(&persistence.Degree{},&persistence.Groups{},&persistence.ProfilesByDegree{})
+			util.FetchAllDegrees(&r)
 		}
-		if !r.db.HasTable(&persistence.Groups{}) {
-			r.db.AutoMigrate(&persistence.Groups{})
-		}
-		if !r.db.HasTable(&persistence.ProfilesByDegree{}) {
-			r.db.AutoMigrate(&persistence.ProfilesByDegree{})
-		}
+		util.UpdateAllDegrees(&r)
 		if !r.db.HasTable(&persistence.ModuleVisit{}) {
 			r.db.AutoMigrate(&persistence.ModuleVisit{})
 		}
 		if !r.db.HasTable(&persistence.Profile{}) {
-			r.db.AutoMigrate(&persistence.Profile{})
+			r.db.DropTableIfExists(&persistence.Profile{},&persistence.ListOfModules{})
+			r.db.AutoMigrate(&persistence.Profile{},&persistence.ListOfModules{})
+			util.FetchAllProfiles(&r)
 		}
-		if !r.db.HasTable(&persistence.ListOfModules{}) {
-			r.db.AutoMigrate(&persistence.ListOfModules{})
-		}
+		util.UpdateAllProfiles(&r)
+		util.CronJob(&r)
 	} else {
 		//For Development and Testing
 		r.db.DropTableIfExists(&persistence.Module{}, &persistence.Requirements{}, &persistence.Student{}, &persistence.ModuleGroup{}, persistence.ModulesList{}, persistence.Parent{}, persistence.Degree{}, persistence.Groups{}, persistence.ProfilesByDegree{}, persistence.ModuleVisit{}, persistence.Profile{}, persistence.ListOfModules{})
 		r.db.AutoMigrate(&persistence.Module{}, &persistence.Requirements{}, &persistence.Student{}, &persistence.ModuleGroup{}, persistence.ModulesList{}, persistence.Parent{}, persistence.Degree{}, persistence.Groups{}, persistence.ProfilesByDegree{}, persistence.ModuleVisit{}, persistence.Profile{}, persistence.ListOfModules{})
+		util.FetchAllData(&r)
+		log.Print("Data Loaded")
 	}
 	return &r
 }

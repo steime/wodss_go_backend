@@ -9,12 +9,15 @@ type Repository interface {
 	UpdateStudent(id string, student *Student) (*Student,error)
 	GetAllModules() ([]Module,error)
 	SaveAllModules([]Module)
+	UpdateAllModules([]Module)
 	GetModuleById(id string) (Module,error)
 	GetAllModuleGroups() ([]ModuleGroup,error)
 	SaveAllModuleGroups([]ModuleGroup)
+	UpdateAllModuleGroups([]ModuleGroup)
 	GetModuleGroupById(id string) (ModuleGroup,error)
 	GetAllDegrees() ([]Degree,error)
 	SaveAllDegrees([]Degree)
+	UpdateAllDegrees([]Degree)
 	GetDegreeById(id string) (Degree,error)
 	CreateModuleVisit(visit *ModuleVisit) (*ModuleVisit,error)
 	GetAllModuleVisits(studentId string) ([]ModuleVisit,error)
@@ -25,6 +28,7 @@ type Repository interface {
 	ResetPassword(mail string, password string) error
 	GetAllProfiles() ([]Profile,error)
 	SaveAllProfiles([]Profile)
+	UpdateAllProfiles([]Profile)
 	GetProfileById(id string) (Profile,error)
 }
 

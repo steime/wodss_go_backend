@@ -36,3 +36,20 @@ func FetchAllProfiles(repository persistence.Repository) {
 		repository.SaveAllProfiles(resp.Profiles)
 	}
 }
+
+func UpdateAllProfiles(repository persistence.Repository) func() {
+	return func() {
+		client, ctx := graphQlConnector()
+
+		req := graphql.NewRequest(profileQuery)
+
+		resp := &ProfileResponse{}
+
+		if err := client.Run(ctx,req,resp); err !=nil {
+			log.Print(err)
+		} else {
+			log.Print("updated")
+			repository.UpdateAllProfiles(resp.Profiles)
+		}
+	}
+}

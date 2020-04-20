@@ -23,4 +23,5 @@ require (
 	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0
+	gopkg.in/robfig/cron.v2 v2.0.0-20150107220207-be2e0b0deed5
 )

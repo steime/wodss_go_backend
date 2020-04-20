@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/gorilla/handlers"
 	"github.com/rs/cors"
-	"github.com/steime/wodss_go_backend/util"
 	"log"
 	"net/http"
 	"os"
@@ -16,13 +15,6 @@ import (
 func main() {
 	//Create new mySQL repository
 	repository := mySQL.NewMySqlRepository()
-	production := os.Getenv("PRODUCTION")
-	if production == "true" {
-		//TODO implement data update
-	} else {
-		util.FetchAllData(repository)
-		log.Print("Data Loaded")
-	}
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"http://localhost:4200"},
