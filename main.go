@@ -14,8 +14,15 @@ import (
 )
 
 func main() {
+	//Create new mySQL repository
 	repository := mySQL.NewMySqlRepository()
-	util.FetchAllData(repository)
+	production := os.Getenv("PRODUCTION")
+	if production == "true" {
+		//TODO implement data update
+	} else {
+		util.FetchAllData(repository)
+		log.Print("Data Loaded")
+	}
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"http://localhost:4200"},
@@ -27,7 +34,8 @@ func main() {
 	})
 	corsRouter := c.Handler(router.NewRouter(repository))
 	loggedRouter := handlers.LoggingHandler(os.Stdout, corsRouter)
-  
+
+  // Start HTTP
   go func() {
     err_http := http.ListenAndServe(":8080", loggedRouter)
     if err_http != nil {

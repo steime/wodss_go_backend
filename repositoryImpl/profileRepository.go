@@ -1,15 +1,13 @@
 package mySQL
 
 import (
-	"fmt"
 	"github.com/steime/wodss_go_backend/persistence"
 	"strconv"
 )
 
-func (r *MySqlRepository) SaveAllProfiles(degrees []persistence.Profile) {
-	for _, d := range degrees {
-		fmt.Println(d)
-		r.db.Create(&d)
+func (r *MySqlRepository) SaveAllProfiles(profiles []persistence.Profile) {
+	for _, p := range profiles {
+		r.db.Create(&p)
 	}
 }
 

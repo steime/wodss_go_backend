@@ -1,14 +1,12 @@
 package mySQL
 
 import (
-	"fmt"
 	"github.com/steime/wodss_go_backend/persistence"
 	"strconv"
 )
 
 func (r *MySqlRepository) SaveAllModules(modules []persistence.Module) {
 	for _, m := range modules {
-		fmt.Println(m)
 		r.db.Create(&m)
 	}
 }
