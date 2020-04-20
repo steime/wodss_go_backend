@@ -29,7 +29,7 @@ func main() {
 		AllowedMethods: []string{"GET","DELETE", "HEAD", "POST", "PUT", "OPTIONS"},
 		AllowCredentials: true,
 		// Enable Debugging for testing, consider disabling in production
-		Debug: true,
+		Debug: false,
 	})
 	corsRouter := c.Handler(router.NewRouter(repository))
 	loggedRouter := handlers.LoggingHandler(os.Stdout, corsRouter)
