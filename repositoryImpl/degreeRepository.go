@@ -13,7 +13,7 @@ func (r *MySqlRepository) SaveAllDegrees(degrees []persistence.Degree){
 
 func (r *MySqlRepository) UpdateAllDegrees(degrees []persistence.Degree){
 	for _ , d := range degrees {
-		r.db.Save(&d)
+		r.db.Omit("Groups","ProfilesByDegree").Save(&d)
 	}
 }
 

@@ -63,8 +63,8 @@ func (r *MySqlRepository) FindOne(email, password string) map[string]interface{}
 		return resp
 	}
 
-	errf := bcrypt.CompareHashAndPassword([]byte(student.Password), []byte(password))
-	if errf != nil && errf == bcrypt.ErrMismatchedHashAndPassword { //Password does not match!
+	err := bcrypt.CompareHashAndPassword([]byte(student.Password), []byte(password))
+	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword { //Password does not match!
 		var resp = map[string]interface{}{"status": false, "message": "Invalid login credentials. Please try again"}
 		return resp
 	}
@@ -72,20 +72,8 @@ func (r *MySqlRepository) FindOne(email, password string) map[string]interface{}
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["sub"] = student.ID
-	//claims["mail"] = student.Email
 	claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
-   /*
-	expiresAt := time.Now().Add(time.Minute * 15).Unix()
-	tk := &persistence.Token{
-		StudentID: student.ID,
-		Email:  student.Email,
-		StandardClaims: &jwt.StandardClaims{
-			ExpiresAt: expiresAt,
-		},
-	}
 
-	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)
-	*/
 	t, error := token.SignedString([]byte("secret"))
 	if error != nil {
 		fmt.Println(error)

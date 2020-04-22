@@ -13,7 +13,7 @@ func (r *MySqlRepository) SaveAllModuleGroups(moduleGroups []persistence.ModuleG
 
 func (r *MySqlRepository) UpdateAllModuleGroups(moduleGroups []persistence.ModuleGroup) {
 	for _, m := range moduleGroups {
-		r.db.Save(&m)
+		r.db.Omit("ModulesList").Save(&m)
 	}
 }
 

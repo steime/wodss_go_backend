@@ -13,7 +13,7 @@ func (r *MySqlRepository) SaveAllModules(modules []persistence.Module) {
 
 func (r *MySqlRepository) UpdateAllModules(modules []persistence.Module) {
 	for _, m := range modules {
-		r.db.Save(&m)
+		r.db.Omit("Requirements").Save(&m)
 	}
 }
 

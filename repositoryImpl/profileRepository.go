@@ -13,7 +13,7 @@ func (r *MySqlRepository) SaveAllProfiles(profiles []persistence.Profile) {
 
 func (r *MySqlRepository) UpdateAllProfiles(profiles []persistence.Profile) {
 	for _, p := range profiles {
-		r.db.Save(&p)
+		r.db.Omit("ListOfModules").Save(&p)
 	}
 }
 
