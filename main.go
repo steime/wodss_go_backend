@@ -24,8 +24,12 @@ func main() {
 		// Enable Debugging for testing, consider disabling in production
 		Debug: false,
 	})
+	f,err := os.OpenFile("requestLog.txt", os.O_CREATE|os.O_APPEND|os.O_WRONLY,0644)
+	if err != nil {
+		log.Print(err)
+	}
 	corsRouter := c.Handler(router.NewRouter(repository))
-	loggedRouter := handlers.LoggingHandler(os.Stdout, corsRouter)
+	loggedRouter := handlers.LoggingHandler(f, corsRouter)
 
   // Start HTTP
   go func() {
@@ -37,10 +41,11 @@ func main() {
    }()
 
   //  Start HTTPS
-  err := http.ListenAndServeTLS(":8081", "server.crt", "server.key", loggedRouter)
+  err = http.ListenAndServeTLS(":8081", "server.crt", "server.key", loggedRouter)
   if err != nil {
 	  log.Printf("Server started on port 8081...\n")
       log.Fatal("Web server (HTTPS): ", err)
   }
 
 }
+

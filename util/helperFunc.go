@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
-	"log"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -76,7 +75,7 @@ func ValidateMail(mail string) bool {
 	return Re.MatchString(mail)
 }
 
-func PrintErrorAndSendBadRequest(w http.ResponseWriter, err error) {
-	log.Print(err)
+func PrintErrorAndSendBadRequest(w http.ResponseWriter,r *http.Request, err error) {
+	LogError(err.Error(),r.Method,r.RequestURI,r.Proto)
 	w.WriteHeader(http.StatusBadRequest)
 }
