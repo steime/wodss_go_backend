@@ -73,7 +73,6 @@ func (r *MySqlRepository) Connect() {
 	password := os.Getenv("DB_PASSWORD")
 	database := os.Getenv("DB_DATABASE")
 	dataSourceName := fmt.Sprintf("%s:%s@/%s?parseTime=true", name, password, database)
-	//var err error
 	if r.db, err = gorm.Open("mysql", dataSourceName); err != nil {
 		panic(err)
 	}

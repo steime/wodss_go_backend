@@ -17,7 +17,6 @@ func GetAllProfiles(repository persistence.Repository) func(w http.ResponseWrite
 			if profiles, err := repository.GetAllProfiles(); err != nil {
 				util.LogErrorAndSendBadRequest(w,r, err)
 			} else {
-
 				for _, profile := range profiles {
 					resp = append(resp, ProfileResponseBuilder(profile))
 				}
