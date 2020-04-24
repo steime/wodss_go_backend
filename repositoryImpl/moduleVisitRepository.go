@@ -13,8 +13,8 @@ func (r *MySqlRepository) CreateModuleVisit(visit *persistence.ModuleVisit) (*pe
 		return visit,errors.New("student not existing")
 	} else if !r.CheckIfModuleExists(moduleID) {
 		return visit,errors.New("module not existing")
-	} else if r.CheckIfModuleVisitExists(studentID,moduleID) {
-		return visit,errors.New("moduleVisit for this module exists")
+	} else if r.CheckIfModuleVisitExistsOnceOrTwice(studentID,moduleID) {
+		return visit,errors.New("more than two moduleVisit for this module exists")
 	} else {
 		if result := r.db.Create(&visit); result.Error != nil {
 			return visit,result.Error
@@ -91,11 +91,15 @@ func (r *MySqlRepository) CheckIfModuleExists(id string) bool {
 	}
 }
 
-func (r *MySqlRepository) CheckIfModuleVisitExists(studentID uint,moduleID string) bool {
+func (r *MySqlRepository) CheckIfModuleVisitExistsOnceOrTwice(studentID uint,moduleID string) bool {
 	var visit persistence.ModuleVisit
-	if result := r.db.Where("module = ? AND student = ?", moduleID,studentID).First(&visit); result.Error != nil {
+	if result := r.db.Where("module = ? AND student = ?", moduleID,studentID).Find(&visit); result.Error != nil {
 		return false
 	} else {
-		return true
+		if count := result.RowsAffected; count < 2 {
+			return false
+		} else {
+			return true
+		}
 	}
 }
