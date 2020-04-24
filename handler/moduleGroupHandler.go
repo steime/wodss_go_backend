@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/steime/wodss_go_backend/persistence"
-	"log"
+	"github.com/steime/wodss_go_backend/util"
 	"net/http"
 )
 
@@ -14,9 +14,8 @@ func GetAllModuleGroups(repository persistence.Repository) func(w http.ResponseW
 		emptyString := ""
 		var resp []persistence.ModuleGroupsResponse
 		if degreeID == emptyString {
-			if moduleGroups , error := repository.GetAllModuleGroups(); error !=nil {
-				log.Print(error)
-				w.WriteHeader(http.StatusBadRequest)
+			if moduleGroups , err := repository.GetAllModuleGroups(); err !=nil {
+				util.LogErrorAndSendBadRequest(w,r,err)
 			} else {
 				for _,group := range moduleGroups {
 					resp = append(resp, ModuleGroupResponseBuilder(group))
@@ -25,14 +24,12 @@ func GetAllModuleGroups(repository persistence.Repository) func(w http.ResponseW
 				json.NewEncoder(w).Encode(resp)
 			}
 		} else {
-			if degree, error := repository.GetDegreeById(degreeID); error != nil {
-				log.Print(error)
-				w.WriteHeader(http.StatusBadRequest)
+			if degree, err := repository.GetDegreeById(degreeID); err != nil {
+				util.LogErrorAndSendBadRequest(w,r,err)
 			} else {
 				for _, degreeGroup := range degree.Groups {
-					if group, error := repository.GetModuleGroupById(degreeGroup.GroupID); error != nil {
-						log.Print(error)
-						w.WriteHeader(http.StatusBadRequest)
+					if group, err := repository.GetModuleGroupById(degreeGroup.GroupID); err != nil {
+						util.LogErrorAndSendBadRequest(w,r,err)
 					} else {
 						resp = append(resp, ModuleGroupResponseBuilder(group))
 					}
@@ -48,26 +45,11 @@ func GetModuleGroupById(repository persistence.Repository) func(w http.ResponseW
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id := vars["id"]
-		if moduleGroup, error := repository.GetModuleGroupById(id); error != nil {
-			log.Print(error)
-			w.WriteHeader(http.StatusNotFound)
+		if moduleGroup, err := repository.GetModuleGroupById(id); err != nil {
+			util.LogErrorAndSendBadRequest(w,r,err)
 		} else {
-			var resp persistence.ModuleGroupsResponse
-			epmtyString := ""
-			// Parse DB Data to response format
-			resp.ID = moduleGroup.ID
-			resp.Name = moduleGroup.Name
-			resp.Minima = moduleGroup.Minima
-			if moduleGroup.Parent.Parent == &epmtyString{
-				resp.Parent = nil
-			} else {
-				resp.Parent = moduleGroup.Parent.Parent
-			}
-			for _, m := range moduleGroup.ModulesList {
-				resp.ModulesList = append(resp.ModulesList, m.ModuleID)
-			}
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(resp)
+			json.NewEncoder(w).Encode(ModuleGroupResponseBuilder(moduleGroup))
 		}
 	}
 }

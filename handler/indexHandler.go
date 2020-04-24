@@ -10,7 +10,7 @@ func IndexHandler() func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusTeapot)
 	}
 }
-
+// TODO probably delete
 func StringHandler() func(w http.ResponseWriter, r *http.Request){
 	return func(w http.ResponseWriter, r *http.Request) {
 		resp := "Informatik"
