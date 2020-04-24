@@ -46,8 +46,6 @@ func (r *MySqlRepository) DeleteStudent(id string) error {
 
 }
 
-
-
 func (r *MySqlRepository) GetStudentById(id string) (persistence.Student,error) {
 	var student persistence.Student
 	if i, err := strconv.Atoi(id); err != nil {
