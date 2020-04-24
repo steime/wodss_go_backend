@@ -154,11 +154,13 @@ func GetModulesFromDegree(repository persistence.Repository,degree persistence.D
 		if group, err := repository.GetModuleGroupById(degreeGroup.GroupID); err != nil {
 			return modules,err
 		} else {
-			for _, moduleList := range group.ModulesList {
-				if module, err := repository.GetModuleById(moduleList.ModuleID); err != nil {
-					return modules,err
-				} else {
-					modules = append(modules, module)
+			if group.Parent.Parent == nil {
+				for _, moduleList := range group.ModulesList {
+					if module, err := repository.GetModuleById(moduleList.ModuleID); err != nil {
+						return modules, err
+					} else {
+						modules = append(modules, module)
+					}
 				}
 			}
 		}
