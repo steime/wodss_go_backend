@@ -75,7 +75,7 @@ func ValidateMail(mail string) bool {
 	return Re.MatchString(mail)
 }
 
-func PrintErrorAndSendBadRequest(w http.ResponseWriter,r *http.Request, err error) {
+func LogErrorAndSendBadRequest(w http.ResponseWriter,r *http.Request, err error) {
 	LogError(err.Error(),r.Method,r.RequestURI,r.Proto, "400")
 	w.WriteHeader(http.StatusBadRequest)
 }

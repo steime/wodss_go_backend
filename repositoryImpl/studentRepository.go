@@ -2,12 +2,9 @@ package mySQL
 
 import (
 	"errors"
-	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/steime/wodss_go_backend/persistence"
 	"golang.org/x/crypto/bcrypt"
 	"strconv"
-	"time"
 )
 
 func (r *MySqlRepository) CreateStudent(student *persistence.Student) (*persistence.Student,error){
@@ -49,50 +46,7 @@ func (r *MySqlRepository) DeleteStudent(id string) error {
 
 }
 
-func (r *MySqlRepository) GetAllStudents() []persistence.Student {
-	var students []persistence.Student
-	r.db.Find(&students).Rows()
-	return students
-}
 
-func (r *MySqlRepository) FindOne(email, password string) map[string]interface{} {
-	student := &persistence.Student{}
-
-	if err := r.db.Where("Email = ?", email).First(student).Error; err != nil {
-		var resp = map[string]interface{}{"status": false, "message": "Email address not found"}
-		return resp
-	}
-
-	err := bcrypt.CompareHashAndPassword([]byte(student.Password), []byte(password))
-	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword { //Password does not match!
-		var resp = map[string]interface{}{"status": false, "message": "Invalid login credentials. Please try again"}
-		return resp
-	}
-
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
-	claims["sub"] = student.ID
-	claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
-
-	t, error := token.SignedString([]byte("secret"))
-	if error != nil {
-		fmt.Println(error)
-	}
-	refreshToken := jwt.New(jwt.SigningMethodHS256)
-	rtClaims := refreshToken.Claims.(jwt.MapClaims)
-	rtClaims["sub"] = student.ID
-	rtClaims["exp"] = time.Now().Add(time.Hour * 24).Unix()
-
-	rt, err := refreshToken.SignedString([]byte("secret"))
-	if err != nil {
-		fmt.Println(error)
-	}
-
-	var resp = map[string]interface{}{}
-	resp["token"] = t
-	resp["refreshToken"] = rt
-	return resp
-}
 
 func (r *MySqlRepository) GetStudentById(id string) (persistence.Student,error) {
 	var student persistence.Student

@@ -2,41 +2,28 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"github.com/steime/wodss_go_backend/persistence"
 	"github.com/steime/wodss_go_backend/util"
 	"gopkg.in/go-playground/validator.v9"
-	"log"
 	"net/http"
 	"net/smtp"
 	"time"
 )
 
-type LoginBody struct {
-	Email string `json:"email,omitempty"`
-	Password string `json:"password,omitempty"`
-}
-
-type ForgotTokenContext struct {
-	ForgotToken string
-}
-
-var tok ForgotTokenContext
+var tok persistence.ForgotTokenContext
 
 func Login(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		student := &LoginBody{}
-		err := json.NewDecoder(r.Body).Decode(student)
-		if err != nil {
-			//var resp = map[string]interface{}{"status": false, "message": "Invalid request"}
-			w.WriteHeader(http.StatusBadRequest)
-			//json.NewEncoder(w).Encode(resp)
+		student := &persistence.LoginBody{}
+		if err := json.NewDecoder(r.Body).Decode(student); err != nil {
+			util.LogErrorAndSendBadRequest(w,r,err)
 		} else {
-			resp := repository.FindOne(student.Email, student.Password)
-			if resp["status"] == false {
-				w.WriteHeader(http.StatusBadRequest)
+			if resp, err := repository.FindOne(student.Email, student.Password); err!= nil {
+				util.LogErrorAndSendBadRequest(w,r,err)
 			} else {
 				w.Header().Set("Content-Type", "application/json")
 				json.NewEncoder(w).Encode(resp)
@@ -47,13 +34,9 @@ func Login(repository persistence.Repository) func(w http.ResponseWriter, r *htt
 
 func RefreshToken(repository persistence.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		type tokenReqBody struct {
-			RefreshToken string `json:"refreshToken"`
-		}
-		tokenReq := &tokenReqBody{}
+		tokenReq := &persistence.TokenRequestBody{}
 		if err := json.NewDecoder(r.Body).Decode(tokenReq); err !=nil {
-			log.Print(err)
-			w.WriteHeader(http.StatusBadRequest)
+			util.LogErrorAndSendBadRequest(w,r,err)
 		}
 		token, _ := jwt.Parse(tokenReq.RefreshToken, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -66,8 +49,7 @@ func RefreshToken(repository persistence.Repository) http.Handler {
 			if student , err := repository.GetStudentById(id); err == nil || checked {
 				newTokenPair, err := generateTokenPair(student.ID)
 				if err != nil {
-					log.Print(err)
-					w.WriteHeader(http.StatusBadRequest)
+					util.LogErrorAndSendBadRequest(w,r,err)
 				}
 				w.Header().Set("Content-Type", "application/json")
 				json.NewEncoder(w).Encode(newTokenPair)
@@ -82,7 +64,6 @@ func generateTokenPair(studentID uint) (map[string]string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["sub"] = studentID
-	//claims["mail"] = mail
 	claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
 
 	t, err := token.SignedString([]byte("secret"))
@@ -111,19 +92,16 @@ func ForgotPassword(repository persistence.Repository) func(w http.ResponseWrite
 		params := mux.Vars(r)
 		mail := params["mail"]
 		if !util.ValidateMail(mail) {
-			log.Print("Mail Address invalid")
-			w.WriteHeader(http.StatusBadRequest)
+			util.LogErrorAndSendBadRequest(w,r,errors.New("mail Address invalid"))
 		} else {
 			if err := repository.ForgotPassword(mail); err != nil {
-				log.Print("Mail Address not existing")
-				w.WriteHeader(http.StatusBadRequest)
+				util.LogErrorAndSendBadRequest(w,r,errors.New("mail Address not existing"))
 			} else {
 				token := jwt.New(jwt.SigningMethodHS256)
 				claims := token.Claims.(jwt.MapClaims)
 				claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
 				if ft, err := token.SignedString([]byte("secret")); err != nil {
-					log.Print("Token Creation failed")
-					w.WriteHeader(http.StatusBadRequest)
+					util.LogErrorAndSendBadRequest(w,r,errors.New("token Creation failed"))
 				} else {
 					tok.ForgotToken = ft
 					auth := smtp.PlainAuth("", "wodssgoserver@gmail.com", "", "smtp.gmail.com")
@@ -131,8 +109,7 @@ func ForgotPassword(repository persistence.Repository) func(w http.ResponseWrite
 					text := "Sie können diesen Token hier eingeben und ihr Passwort zurücksetzen \n" + ft
 					msg := []byte(text)
 					if err := smtp.SendMail("smtp.gmail.com:587", auth, "wodssgoserver@gmail.com", to, msg); err != nil {
-						log.Print(err)
-						w.WriteHeader(http.StatusBadRequest)
+						util.LogErrorAndSendBadRequest(w,r,err)
 					} else {
 						w.WriteHeader(http.StatusNoContent)
 					}
@@ -146,23 +123,19 @@ func ResetPassword(repository persistence.Repository) func(w http.ResponseWriter
 	return func(w http.ResponseWriter, r *http.Request) {
 		resetBody := &persistence.PasswordResetBody{}
 		if err := json.NewDecoder(r.Body).Decode(resetBody); err != nil {
-			log.Print(err)
-			w.WriteHeader(http.StatusBadRequest)
+			util.LogErrorAndSendBadRequest(w,r,err)
 		} else {
 			validate := validator.New()
 			if err = validate.Struct(resetBody) ; err != nil {
-				log.Print(err)
-				w.WriteHeader(http.StatusBadRequest)
+				util.LogErrorAndSendBadRequest(w,r,err)
 			} else {
 				ft := tok.ForgotToken
 				if ft != resetBody.ForgotToken {
 					ft = ""
-					log.Print("Forgot Token mismatch")
-					w.WriteHeader(http.StatusBadRequest)
+					util.LogErrorAndSendBadRequest(w,r,errors.New("forgot Token mismatch"))
 				} else {
 					if err := repository.ResetPassword(resetBody.Email,resetBody.Password); err != nil {
-						log.Print(err)
-						w.WriteHeader(http.StatusBadRequest)
+						util.LogErrorAndSendBadRequest(w,r,err)
 					} else {
 						ft = ""
 						w.WriteHeader(http.StatusNoContent)}}

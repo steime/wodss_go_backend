@@ -19,27 +19,27 @@ func GetAllModules(repository persistence.Repository)func(w http.ResponseWriter,
 		var resp []persistence.ModuleResponse
 		if degreeID == emptyString &&  canVisit == emptyString{
 			if resp, err := BuildModuleResponse(repository); err != nil {
-				util.PrintErrorAndSendBadRequest(w,r,err)
+				util.LogErrorAndSendBadRequest(w,r,err)
 			} else {
 				w.Header().Set("Content-Type", "application/json")
 				json.NewEncoder(w).Encode(resp)
 			}
 		} else if canVisit == "true" && degreeID == emptyString {
 			if studId, err := CheckIfTokenIsInHeader(r); err != nil {
-				util.PrintErrorAndSendBadRequest(w,r, err)
+				util.LogErrorAndSendBadRequest(w,r, err)
 			} else {
 				if forbiddenModulesId, err := GetForbiddenModules(repository,studId); err != nil {
-					util.PrintErrorAndSendBadRequest(w,r, err)
+					util.LogErrorAndSendBadRequest(w,r, err)
 				} else if forbiddenModulesId == nil {
 					if resp, err := BuildModuleResponse(repository); err != nil {
-						util.PrintErrorAndSendBadRequest(w,r,err)
+						util.LogErrorAndSendBadRequest(w,r,err)
 					} else {
 						w.Header().Set("Content-Type", "application/json")
 						json.NewEncoder(w).Encode(resp)
 					}
 				} else {
 					if modules, err := repository.GetAllModules(); err != nil {
-						util.PrintErrorAndSendBadRequest(w,r, err)
+						util.LogErrorAndSendBadRequest(w,r, err)
 					} else {
 						w.Header().Set("Content-Type", "application/json")
 						json.NewEncoder(w).Encode(BuildVisitableModulesResponse(forbiddenModulesId,modules))
@@ -48,23 +48,23 @@ func GetAllModules(repository persistence.Repository)func(w http.ResponseWriter,
 			}
 		} else if canVisit == "true" && degreeID != emptyString {
 			if degree, err := repository.GetDegreeById(degreeID); err != nil  {
-				util.PrintErrorAndSendBadRequest(w,r,err)
+				util.LogErrorAndSendBadRequest(w,r,err)
 			} else {
 				if studId, err := CheckIfTokenIsInHeader(r); err != nil {
-					util.PrintErrorAndSendBadRequest(w,r, err)
+					util.LogErrorAndSendBadRequest(w,r, err)
 				} else {
 					if forbiddenModulesId, err := GetForbiddenModules(repository,studId); err != nil {
-						util.PrintErrorAndSendBadRequest(w,r, err)
+						util.LogErrorAndSendBadRequest(w,r, err)
 					} else if forbiddenModulesId == nil{
 						if resp, err = GetModulesResponseFromDegree(repository,degree); err != nil {
-							util.PrintErrorAndSendBadRequest(w,r,err)
+							util.LogErrorAndSendBadRequest(w,r,err)
 						} else {
 							w.Header().Set("Content-Type", "application/json")
 							json.NewEncoder(w).Encode(resp)
 						}
 					} else {
 						if modules, err := GetModulesFromDegree(repository,degree); err != nil {
-							util.PrintErrorAndSendBadRequest(w,r,err)
+							util.LogErrorAndSendBadRequest(w,r,err)
 						} else {
 							w.Header().Set("Content-Type", "application/json")
 							json.NewEncoder(w).Encode(BuildVisitableModulesResponse(forbiddenModulesId,modules))
@@ -74,10 +74,10 @@ func GetAllModules(repository persistence.Repository)func(w http.ResponseWriter,
 			}
 		} else {
 			if degree, err := repository.GetDegreeById(degreeID); err != nil  {
-				util.PrintErrorAndSendBadRequest(w,r,err)
+				util.LogErrorAndSendBadRequest(w,r,err)
 			} else {
 				if resp, err = GetModulesResponseFromDegree(repository,degree); err != nil {
-					util.PrintErrorAndSendBadRequest(w,r,err)
+					util.LogErrorAndSendBadRequest(w,r,err)
 				} else {
 					w.Header().Set("Content-Type", "application/json")
 					json.NewEncoder(w).Encode(resp)
@@ -107,7 +107,7 @@ func GetModuleById(repository persistence.Repository) func(w http.ResponseWriter
 		vars := mux.Vars(r)
 		id := vars["id"]
 		if module, err := repository.GetModuleById(id); err != nil {
-			util.PrintErrorAndSendBadRequest(w,r,err)
+			util.LogErrorAndSendBadRequest(w,r,err)
 		} else {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(ModuleResponseBuilder(module))

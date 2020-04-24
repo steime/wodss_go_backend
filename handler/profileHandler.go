@@ -15,7 +15,7 @@ func GetAllProfiles(repository persistence.Repository) func(w http.ResponseWrite
 		var resp []persistence.ProfileResponse
 		if degreeID == emptyString {
 			if profiles, err := repository.GetAllProfiles(); err != nil {
-				util.PrintErrorAndSendBadRequest(w,r, err)
+				util.LogErrorAndSendBadRequest(w,r, err)
 			} else {
 
 				for _, profile := range profiles {
@@ -26,11 +26,11 @@ func GetAllProfiles(repository persistence.Repository) func(w http.ResponseWrite
 			}
 		} else {
 			if degree, err := repository.GetDegreeById(degreeID); err != nil  {
-				util.PrintErrorAndSendBadRequest(w,r,err)
+				util.LogErrorAndSendBadRequest(w,r,err)
 			} else {
 				for _, profileList := range degree.ProfilesByDegree {
 					if profile, err := repository.GetProfileById(profileList.ProfileID); err != nil {
-						util.PrintErrorAndSendBadRequest(w,r,err)
+						util.LogErrorAndSendBadRequest(w,r,err)
 					} else {
 						resp = append(resp, ProfileResponseBuilder(profile))
 					}
@@ -47,7 +47,7 @@ func GetProfilesById(repository persistence.Repository) func(w http.ResponseWrit
 		vars := mux.Vars(r)
 		id := vars["id"]
 		if profile, err := repository.GetProfileById(id); err != nil {
-			util.PrintErrorAndSendBadRequest(w,r, err)
+			util.LogErrorAndSendBadRequest(w,r, err)
 		} else {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(ProfileResponseBuilder(profile))

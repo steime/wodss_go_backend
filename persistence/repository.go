@@ -1,8 +1,7 @@
 package persistence
 
 type Repository interface {
-	GetAllStudents() []Student
-	FindOne(email, password string) map[string]interface{}
+	FindOne(email, password string) (TokenPair,error)
 	CreateStudent(user *Student) (*Student,error)
 	GetStudentById(id string) (Student,error)
 	DeleteStudent(id string) error
