@@ -4,15 +4,14 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/steime/wodss_go_backend/persistence"
-	"log"
+	"github.com/steime/wodss_go_backend/util"
 	"net/http"
 )
 
 func GetAllDegrees(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if degrees , error := repository.GetAllDegrees(); error != nil {
-			log.Print(error)
-			w.WriteHeader(http.StatusBadRequest)
+		if degrees , err := repository.GetAllDegrees(); err != nil {
+			util.LogErrorAndSendBadRequest(w,r,err)
 		} else {
 			var resp []persistence.DegreeResponse
 			for _ , degree := range degrees {
@@ -28,9 +27,8 @@ func GetDegreeById(repository persistence.Repository) func(w http.ResponseWriter
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id := vars["id"]
-		if degree, error := repository.GetDegreeById(id); error != nil  {
-			log.Print(error)
-			w.WriteHeader(http.StatusBadRequest)
+		if degree, err := repository.GetDegreeById(id); err != nil  {
+			util.LogErrorAndSendBadRequest(w,r,err)
 		} else {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(DegreeResponseBuilder(degree))
