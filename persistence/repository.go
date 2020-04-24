@@ -30,8 +30,3 @@ type Repository interface {
 	UpdateAllProfiles([]Profile)
 	GetProfileById(id string) (Profile,error)
 }
-
-type DefaultRepository struct {
-	Users []Student
-	Modules []Module
-}
