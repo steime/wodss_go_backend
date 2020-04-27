@@ -1,3 +1,4 @@
+// Module Models, with JSON names and validation tags
 package persistence
 
 type Module struct {
@@ -15,7 +16,7 @@ type Requirements struct {
 	ModuleID string `json:"-"`
 	ReqID string `json:"id"`
 }
-
+// For JSON ID Object List to String List conversion in Handler
 type ModuleResponse struct{
 	ID string `gorm:"number(7);PRIMARY_KEY;" json:"id"`
 	Name string `gorm:"type:varchar(100);" json:"name"`

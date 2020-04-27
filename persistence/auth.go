@@ -1,3 +1,4 @@
+// Auth Models, with JSON names and validation tags
 package persistence
 
 type PasswordResetBody struct {

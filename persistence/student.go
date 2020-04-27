@@ -1,3 +1,4 @@
+// Student Models, with JSON names and validation tags
 package persistence
 
 type Student struct {
@@ -7,7 +8,7 @@ type Student struct {
 	Password string `json:"-"`
 	Degree string `json:"degree,omitempty" validate:"required,numeric"`
 }
-
+// Model without ID for Creation of Module Visit
 type CreateStudentBody struct {
 	Email string `json:"email,omitempty" validate:"required,email,min=6,max=320"`
 	Password string `json:"password,omitempty" validate:"required,min=10"`

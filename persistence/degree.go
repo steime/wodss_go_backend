@@ -1,3 +1,4 @@
+// Degree Models, with JSON names
 package persistence
 
 type Degree struct {
@@ -16,7 +17,7 @@ type ProfilesByDegree struct {
 	DegreeID string		`json:"-"`
 	ProfileID string	`json:"id"`
 }
-
+// For JSON ID Object List to String List conversion in Handler
 type DegreeResponse struct {
 	ID string `json:"id"`
 	Name string `json:"name"`

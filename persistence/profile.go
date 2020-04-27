@@ -1,3 +1,4 @@
+// Profile Visit Models, with JSON names and validation tags
 package persistence
 
 type Profile struct {
@@ -11,7 +12,7 @@ type ListOfModules struct {
 	ProfileID string `json:"-"`
 	ModuleID string `json:"id"`
 }
-
+// For JSON ID Object List to String List conversion in Handler
 type ProfileResponse struct {
 	ID string `json:"id"`
 	Name string `json:"name"`

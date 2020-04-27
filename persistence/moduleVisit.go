@@ -1,3 +1,4 @@
+// Module Visit Models, with JSON names and validation tags
 package persistence
 
 type ModuleVisit struct {
@@ -11,7 +12,7 @@ type ModuleVisit struct {
 	TimeStart string `json:"timeStart,omitempty" validate:"required,contains=:,len=5"`
 	TimeEnd string `json:"timeEnd,omitempty" validate:"required,contains=:,len=5"`
 }
-
+// Model without ID for Creation of Module Visit
 type ModuleVisitCreateBody struct {
 	Grade float32 `json:"grade,omitempty" validate:"min=0,max=6,omitempty"`
 	State string `json:"state,omitempty" validate:"oneof=passed failed ongoing planned,omitempty"`

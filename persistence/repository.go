@@ -1,3 +1,4 @@
+// Interface for separation of repository and handler implementations
 package persistence
 
 type Repository interface {

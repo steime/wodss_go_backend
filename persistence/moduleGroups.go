@@ -1,3 +1,4 @@
+// Module Group Models, with JSON names and validation tags
 package persistence
 
 type ModuleGroup struct {
@@ -17,7 +18,7 @@ type ModulesList struct {
 	ModuleGroupID string `json:"-"`
 	ModuleID string `json:"id"`
 }
-
+// For JSON ID Object List to String List conversion in Handler
 type ModuleGroupsResponse struct {
 	ID string `json:"id"`
 	Name string `json:"name"`
