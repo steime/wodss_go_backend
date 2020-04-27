@@ -1,3 +1,4 @@
+// Implementation of DB related functions for Degree Endpoints
 package mySQL
 
 import (

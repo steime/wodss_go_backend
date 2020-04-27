@@ -1,3 +1,4 @@
+// Implementation of DB related functions for Student Endpoints
 package mySQL
 
 import (

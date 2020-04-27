@@ -1,3 +1,4 @@
+// Implementation of DB related functions for Auth Endpoints
 package mySQL
 
 import (
@@ -7,7 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
-
+// Checks if email exists in student record in DB
 func (r *MySqlRepository) ForgotPassword(mail string) error {
 	if !r.CheckIfEmailExists(mail) {
 		return nil
@@ -15,7 +16,7 @@ func (r *MySqlRepository) ForgotPassword(mail string) error {
 		return errors.New("email doesn't exist")
 	}
 }
-
+// Reset the students password
 func (r *MySqlRepository) ResetPassword(mail string, password string) error {
 	if pass, err := bcrypt.GenerateFromPassword([]byte(password), 14) ; err != nil {
 		return err
@@ -32,7 +33,7 @@ func (r *MySqlRepository) ResetPassword(mail string, password string) error {
 		}
 	}
 }
-
+// Check if Student email and password matches for login, create JWT TokenPair for the Login
 func (r *MySqlRepository) FindOne(email, password string) (persistence.TokenPair,error) {
 	student := &persistence.Student{}
 	tokenPair := persistence.TokenPair{}
@@ -44,12 +45,12 @@ func (r *MySqlRepository) FindOne(email, password string) (persistence.TokenPair
 	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
 		return tokenPair,err
 	}
-
+	// Create Token
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["sub"] = student.ID
 	claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
-
+	// Create Refresh Token
 	t, error := token.SignedString([]byte("secret"))
 	if error != nil {
 		return tokenPair,err

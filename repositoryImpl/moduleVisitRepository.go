@@ -1,3 +1,4 @@
+// Implementation of DB related functions for ModuleVisits Endpoints
 package mySQL
 
 import (

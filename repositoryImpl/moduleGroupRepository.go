@@ -1,3 +1,4 @@
+// Implementation of DB related functions for ModuleGroups Endpoints
 package mySQL
 
 import (
