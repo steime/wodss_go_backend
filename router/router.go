@@ -1,3 +1,4 @@
+// Setup Routes according to API
 package router
 
 import (
@@ -8,9 +9,9 @@ import (
 
 func NewRouter(repository persistence.Repository) *mux.Router {
 	s := mux.NewRouter().StrictSlash(true)
-	s.Use(CommonMiddleware)
+	//Add PathPrefix to all Routes
 	r := s.PathPrefix("/api").Subrouter()
-	// Unprotected Routes
+	// Unprotected Routes without JWTMiddleware
 	r.HandleFunc("/",						handler.IndexHandler())								.Methods("GET")
 	r.HandleFunc("/test",					handler.StringHandler())							.Methods("GET")
 	r.HandleFunc("/auth/login",			handler.Login(repository))							.Methods("POST")

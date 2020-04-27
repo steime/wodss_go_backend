@@ -1,3 +1,4 @@
+// Main entry point to server
 package main
 
 import (
@@ -16,18 +17,21 @@ func main() {
 	//Create new mySQL repository
 	repository := mySQL.NewMySqlRepository()
 
+	// Setup CORS Middleware
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:4200"},
+		AllowedOrigins: []string{"*"},
 		AllowedHeaders: []string{"*"},
 		AllowedMethods: []string{"GET","DELETE", "HEAD", "POST", "PUT", "OPTIONS"},
 		AllowCredentials: true,
 		// Enable Debugging for testing, consider disabling in production
 		Debug: false,
 	})
+	// Create or open requestLog.txt file
 	f,err := os.OpenFile("requestLog.txt", os.O_CREATE|os.O_APPEND|os.O_WRONLY,0644)
 	if err != nil {
 		log.Print(err)
 	}
+	// Install CORS and Logging Middleware
 	corsRouter := c.Handler(router.NewRouter(repository))
 	loggedRouter := handlers.LoggingHandler(f, corsRouter)
 
