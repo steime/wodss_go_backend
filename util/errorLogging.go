@@ -1,3 +1,4 @@
+// Error Logger with similar output format as logging middleware
 package util
 
 import (
@@ -18,7 +19,10 @@ func LogError(errString string, method string, uri string, proto string, httpCod
 			log.Print(err.Error())
 			return
 		} else {
-			f.Close()
+			if err = f.Close(); err != nil {
+				log.Print(err.Error())
+				return
+			}
 		}
 	}
 }

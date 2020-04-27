@@ -1,3 +1,4 @@
+// Cron Job for checking GraphQL API
 package util
 
 import (

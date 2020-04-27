@@ -1,3 +1,4 @@
+// Fetches or Updates Data from GraphQL API for Profile Data
 package util
 
 import (
@@ -48,7 +49,6 @@ func UpdateAllProfiles(repository persistence.Repository) func() {
 		if err := client.Run(ctx,req,resp); err !=nil {
 			log.Print(err)
 		} else {
-			log.Print("updated")
 			repository.UpdateAllProfiles(resp.Profiles)
 		}
 	}

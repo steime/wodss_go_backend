@@ -1,3 +1,4 @@
+// Creates repository, either in production or testing/development mode
 package mySQL
 
 import (
@@ -22,6 +23,9 @@ func NewMySqlRepository() *MySqlRepository {
 	r.Connect()
 	production := os.Getenv("PRODUCTION")
 	if production == "true" {
+		// Production Mode, Tables are Created, if they don't exist
+		// Nested Tables are in the same if clause with the parent table
+		// Existing Tables are updated
 		log.Print("prod")
 		if !r.db.HasTable(&persistence.Student{}) {
 			r.db.AutoMigrate(&persistence.Student{})
@@ -53,17 +57,43 @@ func NewMySqlRepository() *MySqlRepository {
 			util.FetchAllProfiles(&r)
 		}
 		util.UpdateAllProfiles(&r)
+		// Create Cron Job
 		util.CronJob(&r)
 	} else {
-		//For Development and Testing
-		r.db.DropTableIfExists(&persistence.Module{}, &persistence.Requirements{}, &persistence.Student{}, &persistence.ModuleGroup{}, persistence.ModulesList{}, persistence.Parent{}, persistence.Degree{}, persistence.Groups{}, persistence.ProfilesByDegree{}, persistence.ModuleVisit{}, persistence.Profile{}, persistence.ListOfModules{})
-		r.db.AutoMigrate(&persistence.Module{}, &persistence.Requirements{}, &persistence.Student{}, &persistence.ModuleGroup{}, persistence.ModulesList{}, persistence.Parent{}, persistence.Degree{}, persistence.Groups{}, persistence.ProfilesByDegree{}, persistence.ModuleVisit{}, persistence.Profile{}, persistence.ListOfModules{})
+		//For Development and Testing, Drops all Tables and Recreates them
+		r.db.DropTableIfExists(
+			&persistence.Module{},
+			&persistence.Requirements{},
+			&persistence.Student{},
+			&persistence.ModuleGroup{},
+			&persistence.ModulesList{},
+			&persistence.Parent{},
+			&persistence.Degree{},
+			&persistence.Groups{},
+			&persistence.ProfilesByDegree{},
+			&persistence.ModuleVisit{},
+			&persistence.Profile{},
+			&persistence.ListOfModules{})
+		r.db.AutoMigrate(
+			&persistence.Module{},
+			&persistence.Requirements{},
+			&persistence.Student{},
+			&persistence.ModuleGroup{},
+			&persistence.ModulesList{},
+			&persistence.Parent{},
+			&persistence.Degree{},
+			&persistence.Groups{},
+			&persistence.ProfilesByDegree{},
+			&persistence.ModuleVisit{},
+			&persistence.Profile{},
+			&persistence.ListOfModules{})
 		util.FetchAllData(&r)
 		log.Print("Data Loaded")
 	}
 	return &r
 }
 
+// Connect to DB
 func (r *MySqlRepository) Connect() {
 	err := godotenv.Load()
 	if err != nil {
@@ -73,6 +103,7 @@ func (r *MySqlRepository) Connect() {
 	password := os.Getenv("DB_PASSWORD")
 	database := os.Getenv("DB_DATABASE")
 	dataSourceName := fmt.Sprintf("%s:%s@/%s?parseTime=true", name, password, database)
+	// Chose DB Dialect for GORM
 	if r.db, err = gorm.Open("mysql", dataSourceName); err != nil {
 		panic(err)
 	}

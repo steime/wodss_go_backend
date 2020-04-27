@@ -1,3 +1,4 @@
+// Fetches or Updates Data from GraphQL API for Degree Data
 package util
 
 import (

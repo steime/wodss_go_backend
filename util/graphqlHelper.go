@@ -1,3 +1,4 @@
+// Helper Functions for GraphQl data fetching
 package util
 
 import (
@@ -7,7 +8,7 @@ import (
 	"net/http"
 	"os"
 )
-
+// Connects to GraphQL API
 func graphQlConnector() (client *graphql.Client,ctx context.Context){
 	host := os.Getenv("GRAPH_QL_INTEFRACE")
 	httpclient := &http.Client{}
@@ -15,7 +16,7 @@ func graphQlConnector() (client *graphql.Client,ctx context.Context){
 	ctx = context.Background()
 	return client,ctx
 }
-
+// Bundled Data Fetching
 func FetchAllData(repository persistence.Repository) {
 	FetchAllModules(repository)
 	FetchAllModuleGroups(repository)
