@@ -105,13 +105,11 @@ func ResetPassword(repository persistence.Repository) func(w http.ResponseWriter
 			} else {
 				ft := tok.ForgotToken
 				if ft != resetBody.ForgotToken {
-					ft = ""
 					util.LogErrorAndSendBadRequest(w,r,errors.New("forgot Token mismatch"))
 				} else {
 					if err := repository.ResetPassword(resetBody.Email,resetBody.Password); err != nil {
 						util.LogErrorAndSendBadRequest(w,r,err)
 					} else {
-						ft = ""
 						w.WriteHeader(http.StatusNoContent)}}
 			}
 		}

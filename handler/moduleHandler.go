@@ -2,7 +2,6 @@
 package handler
 
 import (
-	"encoding/json"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
@@ -22,8 +21,7 @@ func GetAllModules(repository persistence.Repository)func(w http.ResponseWriter,
 			if resp, err := BuildModuleResponse(repository); err != nil {
 				util.LogErrorAndSendBadRequest(w,r,err)
 			} else {
-				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(resp)
+				util.EncodeJSONandSendResponse(w,r,resp)
 			}
 		} else if canVisit == "true" && degreeID == emptyString {
 			if studId, err := CheckIfTokenIsInHeader(r); err != nil {
@@ -35,15 +33,13 @@ func GetAllModules(repository persistence.Repository)func(w http.ResponseWriter,
 					if resp, err := BuildModuleResponse(repository); err != nil {
 						util.LogErrorAndSendBadRequest(w,r,err)
 					} else {
-						w.Header().Set("Content-Type", "application/json")
-						json.NewEncoder(w).Encode(resp)
+						util.EncodeJSONandSendResponse(w,r,resp)
 					}
 				} else {
 					if modules, err := repository.GetAllModules(); err != nil {
 						util.LogErrorAndSendBadRequest(w,r, err)
 					} else {
-						w.Header().Set("Content-Type", "application/json")
-						json.NewEncoder(w).Encode(BuildVisitableModulesResponse(forbiddenModulesId,modules))
+						util.EncodeJSONandSendResponse(w,r,BuildVisitableModulesResponse(forbiddenModulesId,modules))
 					}
 				}
 			}
@@ -60,15 +56,13 @@ func GetAllModules(repository persistence.Repository)func(w http.ResponseWriter,
 						if resp, err = GetModulesResponseFromDegree(repository,degree); err != nil {
 							util.LogErrorAndSendBadRequest(w,r,err)
 						} else {
-							w.Header().Set("Content-Type", "application/json")
-							json.NewEncoder(w).Encode(resp)
+							util.EncodeJSONandSendResponse(w,r,resp)
 						}
 					} else {
 						if modules, err := GetModulesFromDegree(repository,degree); err != nil {
 							util.LogErrorAndSendBadRequest(w,r,err)
 						} else {
-							w.Header().Set("Content-Type", "application/json")
-							json.NewEncoder(w).Encode(BuildVisitableModulesResponse(forbiddenModulesId,modules))
+							util.EncodeJSONandSendResponse(w,r,BuildVisitableModulesResponse(forbiddenModulesId,modules))
 						}
 					}
 				}
@@ -80,27 +74,11 @@ func GetAllModules(repository persistence.Repository)func(w http.ResponseWriter,
 				if resp, err = GetModulesResponseFromDegree(repository,degree); err != nil {
 					util.LogErrorAndSendBadRequest(w,r,err)
 				} else {
-					w.Header().Set("Content-Type", "application/json")
-					json.NewEncoder(w).Encode(resp)
+					util.EncodeJSONandSendResponse(w,r,resp)
 				}
 			}
 		}
 	}
-}
-
-func ModuleResponseBuilder(module persistence.Module) persistence.ModuleResponse {
-	var resp persistence.ModuleResponse
-	resp.ID = module.ID
-	resp.Name = module.Name
-	resp.Credits = module.Credits
-	resp.Code = module.Code
-	resp.Fs = module.Fs
-	resp.Hs = module.Hs
-	resp.Msp = module.Msp
-	for _ , m := range module.Requirements {
-		resp.Requirements = append(resp.Requirements,m.ReqID)
-	}
-	return resp
 }
 
 func GetModuleById(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
@@ -110,8 +88,7 @@ func GetModuleById(repository persistence.Repository) func(w http.ResponseWriter
 		if module, err := repository.GetModuleById(id); err != nil {
 			util.LogErrorAndSendBadRequest(w,r,err)
 		} else {
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(ModuleResponseBuilder(module))
+			util.EncodeJSONandSendResponse(w,r,ModuleResponseBuilder(module))
 		}
 	}
 }
@@ -223,4 +200,19 @@ func BuildModuleResponse(repository persistence.Repository) ([]persistence.Modul
 		}
 		return resp,nil
 	}
+}
+
+func ModuleResponseBuilder(module persistence.Module) persistence.ModuleResponse {
+	var resp persistence.ModuleResponse
+	resp.ID = module.ID
+	resp.Name = module.Name
+	resp.Credits = module.Credits
+	resp.Code = module.Code
+	resp.Fs = module.Fs
+	resp.Hs = module.Hs
+	resp.Msp = module.Msp
+	for _ , m := range module.Requirements {
+		resp.Requirements = append(resp.Requirements,m.ReqID)
+	}
+	return resp
 }

@@ -2,6 +2,7 @@
 package util
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
@@ -80,6 +81,13 @@ func ValidateMail(mail string) bool {
 func LogErrorAndSendBadRequest(w http.ResponseWriter,r *http.Request, err error) {
 	LogError(err.Error(),r.Method,r.RequestURI,r.Proto, "400")
 	w.WriteHeader(http.StatusBadRequest)
+}
+
+func EncodeJSONandSendResponse(w http.ResponseWriter,r *http.Request, resp interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		LogError(err.Error(),r.Method,r.RequestURI,r.Proto, "400")
+	}
 }
 // Generate Tokenpair for Student, used in refresh handler func
 func GenerateTokenPair(studentID uint) (map[string]string, error) {
