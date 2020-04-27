@@ -2,7 +2,6 @@
 package handler
 
 import (
-	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/steime/wodss_go_backend/persistence"
 	"github.com/steime/wodss_go_backend/util"
@@ -18,8 +17,7 @@ func GetAllDegrees(repository persistence.Repository) func(w http.ResponseWriter
 			for _ , degree := range degrees {
 				resp = append(resp,DegreeResponseBuilder(degree))
 			}
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(resp)
+			util.EncodeJSONandSendResponse(w,r,resp)
 		}
 	}
 }
@@ -31,8 +29,7 @@ func GetDegreeById(repository persistence.Repository) func(w http.ResponseWriter
 		if degree, err := repository.GetDegreeById(id); err != nil  {
 			util.LogErrorAndSendBadRequest(w,r,err)
 		} else {
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(DegreeResponseBuilder(degree))
+			util.EncodeJSONandSendResponse(w,r,DegreeResponseBuilder(degree))
 		}
 	}
 }

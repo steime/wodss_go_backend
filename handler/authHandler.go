@@ -26,8 +26,7 @@ func Login(repository persistence.Repository) func(w http.ResponseWriter, r *htt
 			if resp, err := repository.FindOne(student.Email, student.Password); err!= nil {
 				util.LogErrorAndSendBadRequest(w,r,err)
 			} else {
-				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(resp)
+				util.EncodeJSONandSendResponse(w,r,resp)
 			}
 		}
 	}
@@ -52,8 +51,7 @@ func RefreshToken(repository persistence.Repository) http.Handler {
 				if err != nil {
 					util.LogErrorAndSendBadRequest(w,r,err)
 				}
-				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(newTokenPair)
+				util.EncodeJSONandSendResponse(w,r,newTokenPair)
 				return
 			}
 		}

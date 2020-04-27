@@ -37,9 +37,8 @@ func CreateModuleVisit(repository persistence.Repository) http.Handler {
 					if _, err := repository.CreateModuleVisit(visit); err != nil {
 						util.LogErrorAndSendBadRequest(w,r,err)
 					} else {
-						w.Header().Set("Content-Type", "application/json")
 						http.Redirect(w, r, r.Header.Get("Referer"), 201)
-						json.NewEncoder(w).Encode(visit)
+						util.EncodeJSONandSendResponse(w,r,visit)
 					}
 				}
 			}
@@ -58,8 +57,7 @@ func GetAllModuleVisits(repository persistence.Repository) http.Handler {
 		} else if visits, err := repository.GetAllModuleVisits(studentID); err != nil {
 			util.LogErrorAndSendBadRequest(w,r,err)
 		} else {
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(visits)
+			util.EncodeJSONandSendResponse(w,r,visits)
 		}
 	})
 }
@@ -73,8 +71,7 @@ func GetModuleVisitById (repository persistence.Repository) http.Handler {
 		} else if visit , err := repository.GetModuleVisitById(visitId,studentId); err != nil {
 			util.LogErrorAndSendBadRequest(w,r,err)
 		} else {
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(visit)
+			util.EncodeJSONandSendResponse(w,r,visit)
 		}
 	})
 }
@@ -97,11 +94,10 @@ func UpdateModuleVisit (repository persistence.Repository) http.Handler {
 			if err = validate.Struct(visit); err != nil {
 				util.LogErrorAndSendBadRequest(w,r,err)
 			} else {
-				if updVisit, err := repository.UpdateModuleVisit(visit); err !=nil {
+				if updatedVisit, err := repository.UpdateModuleVisit(visit); err !=nil {
 					util.LogErrorAndSendBadRequest(w,r,err)
 				} else {
-					w.Header().Set("Content-Type", "application/json")
-					json.NewEncoder(w).Encode(updVisit)
+					util.EncodeJSONandSendResponse(w,r,updatedVisit)
 				}
 			}
 		}

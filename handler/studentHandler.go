@@ -34,8 +34,7 @@ func CreateStudent(repository persistence.Repository) func(w http.ResponseWriter
 					util.LogErrorAndSendBadRequest(w,r,err)
 				} else {
 					http.Redirect(w, r, r.Header.Get("Referer"), 201)
-					w.Header().Set("Content-Type", "application/json")
-					json.NewEncoder(w).Encode(student)
+					util.EncodeJSONandSendResponse(w,r,student)
 				}
 			}
 		}
@@ -49,8 +48,7 @@ func GetStudentById(repository persistence.Repository) http.Handler {
 		} else if student, err := repository.GetStudentById(id); err != nil || !checked {
 			util.LogErrorAndSendBadRequest(w,r,err)
 		} else {
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(student)
+			util.EncodeJSONandSendResponse(w,r,student)
 		}
 	})
 }
@@ -73,11 +71,10 @@ func UpdateStudent(repository persistence.Repository) http.Handler {
 				if err = validate.Struct(student); err != nil {
 					util.LogErrorAndSendBadRequest(w,r,err)
 				} else {
-					if updStudent, err := repository.UpdateStudent(id,student); err !=nil {
+					if updatedStudent, err := repository.UpdateStudent(id,student); err !=nil {
 						util.LogErrorAndSendBadRequest(w,r,err)
 					} else {
-						w.Header().Set("Content-Type", "application/json")
-						json.NewEncoder(w).Encode(updStudent)
+						util.EncodeJSONandSendResponse(w,r,updatedStudent)
 					}
 				}
 			}

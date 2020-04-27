@@ -2,7 +2,6 @@
 package handler
 
 import (
-	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/steime/wodss_go_backend/persistence"
 	"github.com/steime/wodss_go_backend/util"
@@ -21,8 +20,7 @@ func GetAllModuleGroups(repository persistence.Repository) func(w http.ResponseW
 				for _,group := range moduleGroups {
 					resp = append(resp, ModuleGroupResponseBuilder(group))
 				}
-				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(resp)
+				util.EncodeJSONandSendResponse(w,r,resp)
 			}
 		} else {
 			if degree, err := repository.GetDegreeById(degreeID); err != nil {
@@ -35,8 +33,7 @@ func GetAllModuleGroups(repository persistence.Repository) func(w http.ResponseW
 						resp = append(resp, ModuleGroupResponseBuilder(group))
 					}
 				}
-				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(resp)
+				util.EncodeJSONandSendResponse(w,r,resp)
 			}
 		}
 	}
@@ -49,8 +46,7 @@ func GetModuleGroupById(repository persistence.Repository) func(w http.ResponseW
 		if moduleGroup, err := repository.GetModuleGroupById(id); err != nil {
 			util.LogErrorAndSendBadRequest(w,r,err)
 		} else {
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(ModuleGroupResponseBuilder(moduleGroup))
+			util.EncodeJSONandSendResponse(w,r,ModuleGroupResponseBuilder(moduleGroup))
 		}
 	}
 }

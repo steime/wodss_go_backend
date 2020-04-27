@@ -2,7 +2,6 @@
 package handler
 
 import (
-	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/steime/wodss_go_backend/persistence"
 	"github.com/steime/wodss_go_backend/util"
@@ -21,8 +20,7 @@ func GetAllProfiles(repository persistence.Repository) func(w http.ResponseWrite
 				for _, profile := range profiles {
 					resp = append(resp, ProfileResponseBuilder(profile))
 				}
-				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(resp)
+				util.EncodeJSONandSendResponse(w,r,resp)
 			}
 		} else {
 			if degree, err := repository.GetDegreeById(degreeID); err != nil  {
@@ -35,8 +33,7 @@ func GetAllProfiles(repository persistence.Repository) func(w http.ResponseWrite
 						resp = append(resp, ProfileResponseBuilder(profile))
 					}
 				}
-				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(resp)
+				util.EncodeJSONandSendResponse(w,r,resp)
 			}
 		}
 	}
@@ -49,8 +46,7 @@ func GetProfilesById(repository persistence.Repository) func(w http.ResponseWrit
 		if profile, err := repository.GetProfileById(id); err != nil {
 			util.LogErrorAndSendBadRequest(w,r, err)
 		} else {
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(ProfileResponseBuilder(profile))
+			util.EncodeJSONandSendResponse(w,r,ProfileResponseBuilder(profile))
 		}
 	}
 }
