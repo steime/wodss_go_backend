@@ -1,3 +1,4 @@
+// Auth Handler functions for /auth routes
 package handler
 
 import (
@@ -47,7 +48,7 @@ func RefreshToken(repository persistence.Repository) http.Handler {
 		if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			checked,id := util.CheckID(r)
 			if student , err := repository.GetStudentById(id); err == nil || checked {
-				newTokenPair, err := generateTokenPair(student.ID)
+				newTokenPair, err := util.GenerateTokenPair(student.ID)
 				if err != nil {
 					util.LogErrorAndSendBadRequest(w,r,err)
 				}
@@ -58,33 +59,6 @@ func RefreshToken(repository persistence.Repository) http.Handler {
 		}
 		w.WriteHeader(http.StatusBadRequest)
 	})
-}
-
-func generateTokenPair(studentID uint) (map[string]string, error) {
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
-	claims["sub"] = studentID
-	claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
-
-	t, err := token.SignedString([]byte("secret"))
-	if err != nil {
-		return nil, err
-	}
-
-	refreshToken := jwt.New(jwt.SigningMethodHS256)
-	rtClaims := refreshToken.Claims.(jwt.MapClaims)
-	rtClaims["sub"] = studentID
-	rtClaims["exp"] = time.Now().Add(time.Hour * 24).Unix()
-
-	rt, err := refreshToken.SignedString([]byte("secret"))
-	if err != nil {
-		return nil, err
-	}
-
-	return map[string]string{
-		"token":  t,
-		"refreshToken": rt,
-	}, nil
 }
 
 func ForgotPassword(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {

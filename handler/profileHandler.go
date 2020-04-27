@@ -1,3 +1,4 @@
+// Profile Handler functions for /profile routes
 package handler
 
 import (

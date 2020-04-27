@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
+	"time"
 )
 // Check if param Student ID matches the Token Student ID
 func CheckID(r *http.Request) (bool,string) {
@@ -79,4 +80,31 @@ func ValidateMail(mail string) bool {
 func LogErrorAndSendBadRequest(w http.ResponseWriter,r *http.Request, err error) {
 	LogError(err.Error(),r.Method,r.RequestURI,r.Proto, "400")
 	w.WriteHeader(http.StatusBadRequest)
+}
+// Generate Tokenpair for Student, used in refresh handler func
+func GenerateTokenPair(studentID uint) (map[string]string, error) {
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["sub"] = studentID
+	claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
+
+	t, err := token.SignedString([]byte("secret"))
+	if err != nil {
+		return nil, err
+	}
+
+	refreshToken := jwt.New(jwt.SigningMethodHS256)
+	rtClaims := refreshToken.Claims.(jwt.MapClaims)
+	rtClaims["sub"] = studentID
+	rtClaims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+
+	rt, err := refreshToken.SignedString([]byte("secret"))
+	if err != nil {
+		return nil, err
+	}
+
+	return map[string]string{
+		"token":  t,
+		"refreshToken": rt,
+	}, nil
 }

@@ -1,3 +1,4 @@
+// Degree Handler functions for /degree routes
 package handler
 
 import (

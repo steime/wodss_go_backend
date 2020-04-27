@@ -1,3 +1,4 @@
+// ModuleGroup Handler functions for /modulegroup routes
 package handler
 
 import (
@@ -7,7 +8,7 @@ import (
 	"github.com/steime/wodss_go_backend/util"
 	"net/http"
 )
-
+// /moduleGroup endpoint with degree query param
 func GetAllModuleGroups(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		degreeID := r.FormValue("degree")

@@ -1,3 +1,4 @@
+// Student Handler functions for /student routes
 package handler
 
 import (

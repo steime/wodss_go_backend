@@ -1,3 +1,4 @@
+// Module Handler functions for /module routes
 package handler
 
 import (
@@ -10,7 +11,7 @@ import (
 	"net/http"
 	"strconv"
 )
-
+// /module Endpoint with support for degree and canVisit support
 func GetAllModules(repository persistence.Repository)func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		degreeID := r.FormValue("degree")
@@ -114,7 +115,7 @@ func GetModuleById(repository persistence.Repository) func(w http.ResponseWriter
 		}
 	}
 }
-
+// Checks if the Header has a token field
 func CheckIfTokenIsInHeader(r *http.Request) (string,error) {
 	if header, err := jwtmiddleware.FromAuthHeader(r); err != nil {
 		return "-1",err
@@ -133,7 +134,8 @@ func CheckIfTokenIsInHeader(r *http.Request) (string,error) {
 		}
 	}
 }
-
+// Gets all Modules from the visits which are either passed or failed
+// TODO check for two occurences
 func GetForbiddenModules(repository persistence.Repository, studId string) ([]string,error) {
 	if moduleVisits, err := repository.GetAllModuleVisits(studId); err != nil {
 		return nil,err
