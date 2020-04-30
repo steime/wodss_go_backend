@@ -6,6 +6,7 @@ import (
 	"github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -26,7 +27,7 @@ func JwtVerify(next http.Handler) func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		_, err = jwt.Parse(header, func(token *jwt.Token) (interface{}, error) {
-			return []byte("secret"), nil
+			return []byte(os.Getenv("SECRET")), nil
 		})
 
 		if err != nil {

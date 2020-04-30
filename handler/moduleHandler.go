@@ -8,6 +8,7 @@ import (
 	"github.com/steime/wodss_go_backend/persistence"
 	"github.com/steime/wodss_go_backend/util"
 	"net/http"
+	"os"
 	"strconv"
 )
 // /module Endpoint with support for degree and canVisit support
@@ -98,7 +99,7 @@ func CheckIfTokenIsInHeader(r *http.Request) (string,error) {
 		return "-1",err
 	} else {
 		if token, err := jwt.Parse(header, func(token *jwt.Token) (i interface{}, err error) {
-			return []byte("secret"), nil
+			return []byte(os.Getenv("SECRET")), nil
 		}); err != nil {
 			return "-1",err
 		} else {

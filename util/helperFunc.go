@@ -7,18 +7,21 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"time"
 )
 // Check if param Student ID matches the Token Student ID
+
+
 func CheckID(r *http.Request) (bool,string) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 	ctx := r.Context()
 	tk := ctx.Value("student")
 	token, _ := jwt.Parse(tk.(string), func(token *jwt.Token) (i interface{}, err error) {
-		return []byte("secret"), nil
+		return []byte(os.Getenv("SECRET")), nil
 	})
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		claimId := int(claims["sub"].(float64))
@@ -33,7 +36,7 @@ func CheckBodyID(r *http.Request, id uint) bool {
 	ctx := r.Context()
 	tk := ctx.Value("student")
 	token, _ := jwt.Parse(tk.(string), func(token *jwt.Token) (i interface{}, err error) {
-		return []byte("secret"), nil
+		return []byte(os.Getenv("SECRET")), nil
 	})
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		claimId := uint(claims["sub"].(float64))
@@ -47,7 +50,7 @@ func CheckQueryID(r *http.Request, id string) bool {
 	ctx := r.Context()
 	tk := ctx.Value("student")
 	token, _ := jwt.Parse(tk.(string), func(token *jwt.Token) (i interface{}, err error) {
-		return []byte("secret"), nil
+		return []byte(os.Getenv("SECRET")), nil
 	})
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		claimId := int(claims["sub"].(float64))
@@ -62,7 +65,7 @@ func GetStudentIdFromToken(r *http.Request) (string,error) {
 	ctx := r.Context()
 	tk := ctx.Value("student")
 	token, _ := jwt.Parse(tk.(string), func(token *jwt.Token) (i interface{}, err error) {
-		return []byte("secret"), nil
+		return []byte(os.Getenv("SECRET")), nil
 	})
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		claimId := int(claims["sub"].(float64))
@@ -96,7 +99,7 @@ func GenerateTokenPair(studentID uint) (map[string]string, error) {
 	claims["sub"] = studentID
 	claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
 
-	t, err := token.SignedString([]byte("secret"))
+	t, err := token.SignedString([]byte(os.Getenv("SECRET")))
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +109,7 @@ func GenerateTokenPair(studentID uint) (map[string]string, error) {
 	rtClaims["sub"] = studentID
 	rtClaims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
-	rt, err := refreshToken.SignedString([]byte("secret"))
+	rt, err := refreshToken.SignedString([]byte(os.Getenv("SECRET")))
 	if err != nil {
 		return nil, err
 	}

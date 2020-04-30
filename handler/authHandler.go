@@ -12,6 +12,7 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 	"net/http"
 	"net/smtp"
+	"os"
 	"time"
 )
 
@@ -42,7 +43,7 @@ func RefreshToken(repository persistence.Repository) http.Handler {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 			}
-			return []byte("secret"), nil
+			return []byte(os.Getenv("SECRET")), nil
 		})
 		if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			checked,id := util.CheckID(r)
@@ -72,7 +73,7 @@ func ForgotPassword(repository persistence.Repository) func(w http.ResponseWrite
 				token := jwt.New(jwt.SigningMethodHS256)
 				claims := token.Claims.(jwt.MapClaims)
 				claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
-				if ft, err := token.SignedString([]byte("secret")); err != nil {
+				if ft, err := token.SignedString([]byte(os.Getenv("SECRET"))); err != nil {
 					util.LogErrorAndSendBadRequest(w,r,errors.New("token Creation failed"))
 				} else {
 					tok.ForgotToken = ft

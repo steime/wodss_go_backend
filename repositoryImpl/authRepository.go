@@ -6,6 +6,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/steime/wodss_go_backend/persistence"
 	"golang.org/x/crypto/bcrypt"
+	"os"
 	"time"
 )
 // Checks if email exists in student record in DB
@@ -51,7 +52,7 @@ func (r *MySqlRepository) FindOne(email, password string) (persistence.TokenPair
 	claims["sub"] = student.ID
 	claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
 	// Create Refresh Token
-	t, error := token.SignedString([]byte("secret"))
+	t, error := token.SignedString([]byte(os.Getenv("SECRET")))
 	if error != nil {
 		return tokenPair,err
 	}
@@ -60,7 +61,7 @@ func (r *MySqlRepository) FindOne(email, password string) (persistence.TokenPair
 	rtClaims["sub"] = student.ID
 	rtClaims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
-	rt, err := refreshToken.SignedString([]byte("secret"))
+	rt, err := refreshToken.SignedString([]byte(os.Getenv("SECRET")))
 	if err != nil {
 		return tokenPair,err
 	}
