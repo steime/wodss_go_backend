@@ -37,8 +37,10 @@ func CreateModuleVisit(repository persistence.Repository) http.Handler {
 					if _, err := repository.CreateModuleVisit(visit); err != nil {
 						util.LogErrorAndSendBadRequest(w,r,err)
 					} else {
+						w.Header().Set("Content-Type", "application/json")
 						http.Redirect(w, r, r.Header.Get("Referer"), 201)
 						util.EncodeJSONandSendResponse(w,r,visit)
+
 					}
 				}
 			}

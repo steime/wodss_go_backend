@@ -124,7 +124,16 @@ func GetForbiddenModules(repository persistence.Repository, studId string) ([]st
 				forbiddenModulesId = append(forbiddenModulesId, moduleVisit.Module)
 			}
 		}
-		return forbiddenModulesId, nil
+		encountered := map[string]bool{}
+		for v:= range forbiddenModulesId {
+			encountered[forbiddenModulesId[v]] = true
+		}
+
+		var result []string
+		for key, _ := range encountered {
+			result = append(result, key)
+		}
+		return result, nil
 	}
 }
 
