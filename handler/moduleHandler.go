@@ -113,7 +113,6 @@ func CheckIfTokenIsInHeader(r *http.Request) (string,error) {
 	}
 }
 // Gets all Modules from the visits which are either passed or failed
-// TODO check for two occurences
 func GetForbiddenModules(repository persistence.Repository, studId string) ([]string,error) {
 	if moduleVisits, err := repository.GetAllModuleVisits(studId); err != nil {
 		return nil,err
