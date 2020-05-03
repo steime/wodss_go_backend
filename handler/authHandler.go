@@ -77,7 +77,7 @@ func ForgotPassword(repository persistence.Repository) func(w http.ResponseWrite
 					util.LogErrorAndSendBadRequest(w,r,errors.New("token Creation failed"))
 				} else {
 					tok.ForgotToken = ft
-					auth := smtp.PlainAuth("", "wodssgoserver@gmail.com", "", "smtp.gmail.com")
+					auth := smtp.PlainAuth("", "wodssgoserver@gmail.com", "wodssWorkshop", "smtp.gmail.com")
 					to := []string{mail}
 					text := "Sie können diesen Token hier eingeben und ihr Passwort zurücksetzen \n" + ft
 					msg := []byte(text)
