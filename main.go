@@ -24,7 +24,7 @@ func main() {
 		AllowedMethods: []string{"GET","DELETE", "HEAD", "POST", "PUT", "OPTIONS"},
 		AllowCredentials: true,
 		// Enable Debugging for testing, consider disabling in production
-		Debug: true,
+		Debug: false,
 	})
 	// Create or open requestLog.txt file
 	f,err := os.OpenFile("requestLog.txt", os.O_CREATE|os.O_APPEND|os.O_WRONLY,0644)

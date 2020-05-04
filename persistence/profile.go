@@ -5,7 +5,7 @@ type Profile struct {
 	ID string `gorm:"number(7);PRIMARY_KEY;" json:"id"`
 	Name string `gorm:"type:varchar(100)" json:"name"`
 	ListOfModules []ListOfModules `json:"modules"`
-	Minima uint `gorm:"number(3);" json:"minima"`
+	Minima uint `gorm:"number(3);" json:"min"`
 }
 
 type ListOfModules struct {

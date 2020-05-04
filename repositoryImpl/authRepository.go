@@ -50,7 +50,7 @@ func (r *MySqlRepository) FindOne(email, password string) (persistence.TokenPair
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["sub"] = student.ID
-	claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
+	claims["exp"] = time.Now().Add(time.Minute * 1).Unix()
 	// Create Refresh Token
 	t, error := token.SignedString([]byte(os.Getenv("SECRET")))
 	if error != nil {
