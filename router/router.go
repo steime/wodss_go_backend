@@ -25,11 +25,11 @@ func NewRouter(repository persistence.Repository) *mux.Router {
 	r.HandleFunc("/modulegroups/{id}",	handler.GetModuleGroupById(repository))				.Methods("GET")
 	r.HandleFunc("/profiles",				handler.GetAllProfiles(repository))					.Methods("GET")
 	r.HandleFunc("/profiles/{id}",		handler.GetProfilesById(repository))				.Methods("GET")
+	r.HandleFunc("/auth/refresh",			handler.RefreshToken(repository))					.Methods("POST")
 	// Protected Routes with JWT Middleware
 	r.HandleFunc("/students/{id}",		JwtVerify(handler.GetStudentById(repository)))		.Methods("GET")
 	r.HandleFunc("/students/{id}",		JwtVerify(handler.UpdateStudent(repository)))		.Methods("PUT")
 	r.HandleFunc("/students/{id}",		JwtVerify(handler.DeleteStudent(repository)))		.Methods("DELETE")
-	r.HandleFunc("/auth/refresh",			JwtVerify(handler.RefreshToken(repository)))		.Methods("POST")
 	r.HandleFunc("/modulevisits",			JwtVerify(handler.CreateModuleVisit(repository)))	.Methods("POST")
 	r.HandleFunc("/modulevisits",			JwtVerify(handler.GetAllModuleVisits(repository)))	.Methods("GET")
 	r.HandleFunc("/modulevisits/{id}",	JwtVerify(handler.GetModuleVisitById(repository)))	.Methods("GET")

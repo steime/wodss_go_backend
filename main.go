@@ -37,7 +37,7 @@ func main() {
 
   // Start HTTP
   go func() {
-    err_http := http.ListenAndServe(":8080", loggedRouter)
+    err_http := http.ListenAndServe(":3000", loggedRouter)
     if err_http != nil {
 		log.Printf("Server started on port 8080...\n")
         log.Fatal("Web server (HTTP): ", err_http)
@@ -45,7 +45,7 @@ func main() {
    }()
 
   //  Start HTTPS
-  err = http.ListenAndServeTLS(":8081", "server.crt", "server.key", loggedRouter)
+  err = http.ListenAndServeTLS(":3001", "server.crt", "server.key", loggedRouter)
   if err != nil {
 	  log.Printf("Server started on port 8081...\n")
       log.Fatal("Web server (HTTPS): ", err)

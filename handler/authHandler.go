@@ -33,8 +33,8 @@ func Login(repository persistence.Repository) func(w http.ResponseWriter, r *htt
 	}
 }
 
-func RefreshToken(repository persistence.Repository) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func RefreshToken(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		tokenReq := &persistence.TokenRequestBody{}
 		if err := json.NewDecoder(r.Body).Decode(tokenReq); err !=nil {
 			util.LogErrorAndSendBadRequest(w,r,err)
@@ -57,7 +57,7 @@ func RefreshToken(repository persistence.Repository) http.Handler {
 			}
 		}
 		w.WriteHeader(http.StatusBadRequest)
-	})
+	}
 }
 
 func ForgotPassword(repository persistence.Repository) func(w http.ResponseWriter, r *http.Request) {
