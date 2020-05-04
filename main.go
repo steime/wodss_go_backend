@@ -24,7 +24,7 @@ func main() {
 		AllowedMethods: []string{"GET","DELETE", "HEAD", "POST", "PUT", "OPTIONS"},
 		AllowCredentials: true,
 		// Enable Debugging for testing, consider disabling in production
-		Debug: false,
+		Debug: true,
 	})
 	// Create or open requestLog.txt file
 	f,err := os.OpenFile("requestLog.txt", os.O_CREATE|os.O_APPEND|os.O_WRONLY,0644)
@@ -45,7 +45,7 @@ func main() {
    }()
 
   //  Start HTTPS
-  err = http.ListenAndServeTLS(":3001", "server.crt", "server.key", loggedRouter)
+  err = http.ListenAndServeTLS(":3001", "/etc/letsencrypt/live/wodss.xyz/fullchain.pem", "/etc/letsencrypt/live/wodss.xyz/privkey.pem", loggedRouter)
   if err != nil {
 	  log.Printf("Server started on port 8081...\n")
       log.Fatal("Web server (HTTPS): ", err)
