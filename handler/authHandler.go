@@ -12,6 +12,7 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 	"net/http"
 	"net/smtp"
+	"strconv"
 	"os"
 	"time"
 )
@@ -45,9 +46,11 @@ func RefreshToken(repository persistence.Repository) func(w http.ResponseWriter,
 			}
 			return []byte(os.Getenv("SECRET")), nil
 		})
-		if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			checked,id := util.CheckID(r)
-			if student , err := repository.GetStudentById(id); err == nil || checked {
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			claimId := int(claims["sub"].(float64))
+			id := strconv.Itoa(claimId)
+			//checked,id := util.CheckID(r)
+			if student , err := repository.GetStudentById(id); err == nil {
 				newTokenPair, err := util.GenerateTokenPair(student.ID)
 				if err != nil {
 					util.LogErrorAndSendBadRequest(w,r,err)

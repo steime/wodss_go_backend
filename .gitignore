@@ -20,4 +20,7 @@ wodss_go_backend
 errorLog.txt
 requestLog.txt
 
-
+server.crt
+server.key
+tmux-client-19602.log
+tmux-server-19604.log
