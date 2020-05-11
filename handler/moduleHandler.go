@@ -213,6 +213,7 @@ func BuildModuleResponse(repository persistence.Repository) ([]persistence.Modul
 
 func ModuleResponseBuilder(module persistence.Module) persistence.ModuleResponse {
 	var resp persistence.ModuleResponse
+	emptyList := make([]string, 0)
 	resp.ID = module.ID
 	resp.Name = module.Name
 	resp.Credits = module.Credits
@@ -220,8 +221,12 @@ func ModuleResponseBuilder(module persistence.Module) persistence.ModuleResponse
 	resp.Fs = module.Fs
 	resp.Hs = module.Hs
 	resp.Msp = module.Msp
-	for _ , m := range module.Requirements {
-		resp.Requirements = append(resp.Requirements,m.ReqID)
+	if len(module.Requirements) > 0 {
+		for _, m := range module.Requirements {
+			resp.Requirements = append(resp.Requirements, m.ReqID)
+		}
+	} else {
+		resp.Requirements = emptyList
 	}
 	return resp
 }

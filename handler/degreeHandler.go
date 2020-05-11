@@ -36,13 +36,22 @@ func GetDegreeById(repository persistence.Repository) func(w http.ResponseWriter
 
 func DegreeResponseBuilder(degree persistence.Degree) persistence.DegreeResponse {
 	var resp persistence.DegreeResponse
+	emptyList := make([]string, 0)
 	resp.ID = degree.ID
 	resp.Name = degree.Name
-	for _ , g := range degree.Groups {
-		resp.Groups = append(resp.Groups,g.GroupID)
+	if len(degree.Groups) > 0 {
+		for _, g := range degree.Groups {
+			resp.Groups = append(resp.Groups, g.GroupID)
+		}
+	} else {
+		resp.Groups = emptyList
 	}
-	for _ , p := range degree.ProfilesByDegree {
-		resp.Profiles = append(resp.Profiles,p.ProfileID)
+	if len(degree.ProfilesByDegree) > 0 {
+		for _, p := range degree.ProfilesByDegree {
+			resp.Profiles = append(resp.Profiles, p.ProfileID)
+		}
+	} else {
+		resp.Groups = emptyList
 	}
 	return resp
 }

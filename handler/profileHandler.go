@@ -53,10 +53,15 @@ func GetProfilesById(repository persistence.Repository) func(w http.ResponseWrit
 
 func ProfileResponseBuilder(profile persistence.Profile) persistence.ProfileResponse {
 	var resp persistence.ProfileResponse
+	emptyList := make([]string, 0)
 	resp.ID = profile.ID
 	resp.Name = profile.Name
-	for _, p := range profile.ListOfModules {
-		resp.ListOfModules = append(resp.ListOfModules,p.ModuleID)
+	if len(profile.ListOfModules) > 0 {
+		for _, p := range profile.ListOfModules {
+			resp.ListOfModules = append(resp.ListOfModules, p.ModuleID)
+		}
+	} else {
+		resp.ListOfModules = emptyList
 	}
 	resp.Minima = profile.Minima
 	return resp

@@ -54,6 +54,7 @@ func GetModuleGroupById(repository persistence.Repository) func(w http.ResponseW
 func ModuleGroupResponseBuilder(group persistence.ModuleGroup) persistence.ModuleGroupsResponse{
 	var moduleGroupResponse persistence.ModuleGroupsResponse
 	emptyString := ""
+	emptyList := make([]string, 0)
 	moduleGroupResponse.ID = group.ID
 	moduleGroupResponse.Name = group.Name
 	moduleGroupResponse.Minima = group.Minima
@@ -62,8 +63,12 @@ func ModuleGroupResponseBuilder(group persistence.ModuleGroup) persistence.Modul
 	} else {
 		moduleGroupResponse.Parent = group.Parent.Parent
 	}
-	for _, m := range group.ModulesList {
-		moduleGroupResponse.ModulesList = append(moduleGroupResponse.ModulesList, m.ModuleID)
+	if len(group.ModulesList) > 0 {
+		for _, m := range group.ModulesList {
+			moduleGroupResponse.ModulesList = append(moduleGroupResponse.ModulesList, m.ModuleID)
+		}
+	} else {
+		moduleGroupResponse.ModulesList = emptyList
 	}
 	return moduleGroupResponse
 }
