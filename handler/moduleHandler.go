@@ -9,7 +9,6 @@ import (
 	"github.com/steime/wodss_go_backend/util"
 	"net/http"
 	"os"
-	"strconv"
 )
 // /module Endpoint with support for degree and canVisit support
 func GetAllModules(repository persistence.Repository)func(w http.ResponseWriter, r *http.Request) {
@@ -106,8 +105,7 @@ func CheckIfTokenIsInHeader(r *http.Request) (string,error) {
 			if claims, ok := token.Claims.(jwt.MapClaims); !ok && !token.Valid {
 				return "-1",err
 			} else {
-				claimId := int(claims["sub"].(float64))
-				return strconv.Itoa(claimId), nil
+				return claims["sub"].(string), nil
 			}
 		}
 	}

@@ -89,7 +89,7 @@ func UpdateModuleVisit (repository persistence.Repository) http.Handler {
 			util.LogErrorAndSendBadRequest(w,r,err)
 		} else if bodyId := strconv.Itoa(int(visit.ID)); bodyId != visitId {
 			util.LogErrorAndSendBadRequest(w,r,errors.New("bodyId doesn't match pathId"))
-		} else if bodyStudentId := strconv.Itoa(int(visit.Student)); bodyStudentId != studentId {
+		} else if visit.Student != studentId {
 			util.LogErrorAndSendBadRequest(w,r,errors.New("bodyStudentId doesn't match StudentId"))
 		} else {
 			validate := validator.New()
@@ -112,7 +112,7 @@ func DeleteModuleVisit(repository persistence.Repository) http.Handler {
 		visitId := vars["id"]
 		if  studentId, err := util.GetStudentIdFromToken(r); err != nil {
 			util.LogErrorAndSendBadRequest(w,r,err)
-		} else if error := repository.DeleteModuleVisit(visitId,studentId); error != nil {
+		} else if err := repository.DeleteModuleVisit(visitId,studentId); err != nil {
 			util.LogErrorAndSendBadRequest(w,r,err)
 		} else {
 			w.WriteHeader(http.StatusNoContent)

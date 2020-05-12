@@ -4,12 +4,12 @@ package util
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"net/http"
 	"os"
 	"regexp"
-	"strconv"
 	"time"
 )
 // Check if param Student ID matches the Token Student ID
@@ -24,22 +24,21 @@ func CheckID(r *http.Request) (bool,string) {
 		return []byte(os.Getenv("SECRET")), nil
 	})
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		claimId := int(claims["sub"].(float64))
-		studId := strconv.Itoa(claimId)
+		studId := claims["sub"].(string)
 		return studId == id ,studId
 	} else {
 		return false,"-1"
 	}
 }
 // Check if query param Student ID matches the Token Student ID, ID as uint
-func CheckBodyID(r *http.Request, id uint) bool {
+func CheckBodyID(r *http.Request, id string) bool {
 	ctx := r.Context()
 	tk := ctx.Value("student")
 	token, _ := jwt.Parse(tk.(string), func(token *jwt.Token) (i interface{}, err error) {
 		return []byte(os.Getenv("SECRET")), nil
 	})
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		claimId := uint(claims["sub"].(float64))
+		claimId := claims["sub"].(string)
 		return claimId == id
 	} else {
 		return false
@@ -53,8 +52,7 @@ func CheckQueryID(r *http.Request, id string) bool {
 		return []byte(os.Getenv("SECRET")), nil
 	})
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		claimId := int(claims["sub"].(float64))
-		studId := strconv.Itoa(claimId)
+		studId := claims["sub"].(string)
 		return studId == id
 	} else {
 		return false
@@ -68,8 +66,7 @@ func GetStudentIdFromToken(r *http.Request) (string,error) {
 		return []byte(os.Getenv("SECRET")), nil
 	})
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		claimId := int(claims["sub"].(float64))
-		studId := strconv.Itoa(claimId)
+		studId := claims["sub"].(string)
 		return  studId ,nil
 	} else {
 		return "-1", errors.New("unable to extract id from token")
@@ -96,7 +93,7 @@ func EncodeJSONandSendResponse(w http.ResponseWriter,r *http.Request, resp inter
 func GenerateTokenPair(studentID uint) (map[string]string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
-	claims["sub"] = studentID
+	claims["sub"] = fmt.Sprint(studentID)
 	claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
 
 	t, err := token.SignedString([]byte(os.Getenv("SECRET")))
@@ -106,7 +103,7 @@ func GenerateTokenPair(studentID uint) (map[string]string, error) {
 
 	refreshToken := jwt.New(jwt.SigningMethodHS256)
 	rtClaims := refreshToken.Claims.(jwt.MapClaims)
-	rtClaims["sub"] = studentID
+	rtClaims["sub"] = fmt.Sprint(studentID)
 	rtClaims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
 	rt, err := refreshToken.SignedString([]byte(os.Getenv("SECRET")))

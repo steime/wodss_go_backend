@@ -3,6 +3,7 @@ package mySQL
 
 import (
 	"errors"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/steime/wodss_go_backend/persistence"
 	"golang.org/x/crypto/bcrypt"
@@ -49,7 +50,7 @@ func (r *MySqlRepository) FindOne(email, password string) (persistence.TokenPair
 	// Create Token
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
-	claims["sub"] = student.ID
+	claims["sub"] = fmt.Sprint(student.ID)
 	claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
 	// Create Refresh Token
 	t, error := token.SignedString([]byte(os.Getenv("SECRET")))
@@ -58,7 +59,7 @@ func (r *MySqlRepository) FindOne(email, password string) (persistence.TokenPair
 	}
 	refreshToken := jwt.New(jwt.SigningMethodHS256)
 	rtClaims := refreshToken.Claims.(jwt.MapClaims)
-	rtClaims["sub"] = student.ID
+	rtClaims["sub"] = fmt.Sprint(student.ID)
 	rtClaims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
 	rt, err := refreshToken.SignedString([]byte(os.Getenv("SECRET")))

@@ -72,7 +72,7 @@ func (r *MySqlRepository) DeleteModuleVisit(visitId string, studentId string) er
 	}
 }
 
-func (r *MySqlRepository) CheckIfStudentExists(id uint) bool {
+func (r *MySqlRepository) CheckIfStudentExists(id string) bool {
 	var student persistence.Student
 	if result := r.db.Find(&student,id); result.Error != nil {
 		return false
@@ -92,7 +92,7 @@ func (r *MySqlRepository) CheckIfModuleExists(id string) bool {
 	}
 }
 
-func (r *MySqlRepository) CheckIfModuleVisitExistsOnceOrTwice(studentID uint,moduleID string) bool {
+func (r *MySqlRepository) CheckIfModuleVisitExistsOnceOrTwice(studentID string,moduleID string) bool {
 	var visit persistence.ModuleVisit
 	if result := r.db.Where("module = ? AND student = ?", moduleID,studentID).Find(&visit); result.Error != nil {
 		return false
