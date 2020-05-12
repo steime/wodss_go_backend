@@ -7,7 +7,7 @@ type ModuleVisit struct {
 	State string `json:"state,omitempty" validate:"oneof=passed failed ongoing planned,omitempty"`
 	Student string `json:"student,omitempty" validate:"required"`
 	Module string `json:"module,omitempty" validate:"required,len=7"`
-	Semester string `json:"semester,omitempty" validate:"required"`
+	Semester string `json:"semester,omitempty" validate:"-"`
 	Weekday int `json:"weekday" validate:"min=0,max=6,omitempty"`
 	TimeStart string `json:"timeStart,omitempty" validate:"required,contains=:,len=5"`
 	TimeEnd string `json:"timeEnd,omitempty" validate:"required,contains=:,len=5"`
@@ -18,7 +18,7 @@ type ModuleVisitCreateBody struct {
 	State string `json:"state,omitempty" validate:"oneof=passed failed ongoing planned,omitempty"`
 	Student string `json:"student,omitempty" validate:"required"`
 	Module string `json:"module,omitempty" validate:"required,len=7"`
-	Semester string `json:"semester,omitempty" validate:"required"`
+	Semester string `json:"semester,omitempty" validate:"-"`
 	Weekday int `json:"weekday,omitempty" validate:"min=0,max=6,omitempty"`
 	TimeStart string `json:"timeStart,omitempty" validate:"required,contains=:,len=5"`
 	TimeEnd string `json:"timeEnd,omitempty" validate:"required,contains=:,len=5"`
