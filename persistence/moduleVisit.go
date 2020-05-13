@@ -9,8 +9,8 @@ type ModuleVisit struct {
 	Module string `json:"module,omitempty" validate:"required,len=7"`
 	Semester string `json:"semester,omitempty" validate:"-"`
 	Weekday int `json:"weekday" validate:"min=0,max=6,omitempty"`
-	TimeStart string `json:"timeStart,omitempty" validate:"required,contains=:,len=5"`
-	TimeEnd string `json:"timeEnd,omitempty" validate:"required,contains=:,len=5"`
+	TimeStart string `json:"timeStart,omitempty" validate:"required,contains=:,min=4,max=5"`
+	TimeEnd string `json:"timeEnd,omitempty" validate:"required,contains=:,min=4,max=5"`
 }
 // Model without ID for Creation of Module Visit
 type ModuleVisitCreateBody struct {
@@ -20,6 +20,6 @@ type ModuleVisitCreateBody struct {
 	Module string `json:"module,omitempty" validate:"required,len=7"`
 	Semester string `json:"semester,omitempty" validate:"-"`
 	Weekday int `json:"weekday,omitempty" validate:"min=0,max=6,omitempty"`
-	TimeStart string `json:"timeStart,omitempty" validate:"required,contains=:,len=5"`
-	TimeEnd string `json:"timeEnd,omitempty" validate:"required,contains=:,len=5"`
+	TimeStart string `json:"timeStart,omitempty" validate:"required,contains=:,min=4,max=5"`
+	TimeEnd string `json:"timeEnd,omitempty" validate:"required,contains=:,min=4,max=5"`
 }
