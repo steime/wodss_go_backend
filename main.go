@@ -36,14 +36,17 @@ func main() {
 	loggedRouter := handlers.LoggingHandler(f, corsRouter)
 
   // Start HTTP
+  // Remove the following Line for local Testing
  go func() {
     err_http := http.ListenAndServe(":3000", loggedRouter)
     if err_http != nil {
 		log.Printf("Server started on port 3000...\n")
         log.Fatal("Web server (HTTP): ", err_http)
     }
+	 // Remove the following Line for local Testing
   }()
 
+	// Remove following Lines for local Testing
   //  Start HTTPS
   err = http.ListenAndServeTLS(":3001", "/etc/letsencrypt/live/wodss.xyz/fullchain.pem", "/etc/letsencrypt/live/wodss.xyz/privkey.pem", loggedRouter)
   if err != nil {
