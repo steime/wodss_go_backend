@@ -127,7 +127,7 @@ func GetForbiddenModules(repository persistence.Repository, studId string) ([]st
 		}
 
 		var result []string
-		for key, _ := range encountered {
+		for key := range encountered {
 			result = append(result, key)
 		}
 		return result, nil
